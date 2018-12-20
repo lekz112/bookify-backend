@@ -1,0 +1,19 @@
+table Meetups
+
+table MeetupInvitations(
+    meetup_id
+    user_id
+)
+
+table Users
+
+table Messages(
+    user_id
+    meetup_id
+)
+
+My meetups:
+select meetup.*, meetupInvitations.status 
+from meetupInvitations
+join meetup on meetupInvitations.meetup_id = meetup.meetup_id
+where meetupInvitations.user_id = ? and meetupInvitations.status in [waiting, confirmed, canceled]

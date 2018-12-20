@@ -1,0 +1,159 @@
+// Meetup is a (single?) event
+// It has a start time
+// It may have a place specified (place might not be known yet)
+// It has a status. (Who completes the event? - probably no-one)
+// It might have attendance limit
+// It has a list of attendess with different statuses
+
+entity Meetup {
+    id: string
+    name: string
+    description: string?    
+    place: string? // Meetup can be created without a place, it can be set later    
+    books: Book[] // Books this meetup is about, can be empty
+    time: datetime // Start time, endtime?
+    status: MeetupStatus // [scheduled, canceled]
+    attendees: Attendee[] // List of people who is going to attend, can be empty    
+    attendanceLimit: int? // Null for unlimited
+    comments: Message[]
+}
+
+event MeetupCreated {
+    meetup: Meetup
+    time: datetime
+}
+
+command CreateMeetup {
+    name: string
+    description: string?    
+    place: string?
+    books: Book[]
+    time: datetime    
+    attendees: Attendee[]
+}
+
+// Is canceling and deleting meetup the same?
+// When meetup is cancelled we have notify every attendee
+// I should still see this meetup in my feed, need to dismss it
+event MeetupCanceled {
+    meetup: Meetup
+    time: datetime
+}
+command CancelMeetup {
+    id: string
+}
+
+// Do we need to include before/after info?
+event MeetupUpdated {
+    meetup: Meetup
+    time: datetime
+}
+
+// Should every field here be optional? Or should we require to always pass all the data?
+// Status change should be driven by other events
+// Constraint: We cannot change attendance limit to be less than number of confirmed attendees
+command UpdateMeetup {
+    id: string
+    name: string?
+    description: string?
+    place: string?
+    time: datetime?
+    books: Boook[]?    
+    attendanceLimit: int? // (x) => x >= attendess.filter { it.confirmed }.size
+}
+
+value Book {
+    isbn: string
+    title: string
+    description: string
+    authors: string // All authors
+}
+
+// As a user I want to attend a meetup
+// AddUserToAttendeeList
+commmand CreateMeetupInvitation {
+
+}
+
+// UserAddedToAttendeeList
+event MeetupInvitationCreated {
+    user: User
+    meetup: Meetup
+    status: MeetupInvitationStatus
+}
+
+// If there is an attendance limit
+// If there are users in the waiting list
+// When the attendee list has a free spot
+// Promote first user from the waiting list to the attendee list
+command ChangeMeetupInvitationStatus
+event MeetupInvitationStatusChanged {
+
+}
+
+// Can we even delete them?
+// Shouldn't that be just a status change?
+command DeleteMeetupInvitation
+event UserRemovedFromAttendeeList {}
+
+// Invitations
+// As a meetup organzier, I want to invite user to a meetup
+// User has to respond whether he would attend or not
+// Can still reuse default commands
+// Inviting user to meetup is adding him to attendeeList with special status
+// Confirming or declining invite - changing the status
+
+// Attendee is a user that want to attend a meetup
+// Is every attendee a user? yes.
+// Isn't that MeetupInvitation? Yep, let's call it MeetupInvitation then. (Was Attendee)
+// Proper status vs actual dates (declined_at, canceled_at)
+entity MeetupInvitation {    
+    user: User
+    meetup: Meetup
+    role: MeetupRole // [organizer, guest]
+    status: MeetupInvitationStatus // [waiting, confirmed, declined, canceled, dismissed]
+}
+
+// Message
+// As a user I want to leave a public message for a particlar meetup
+// Message has text, author, time it was posted
+// Meetup owns the messages
+
+entity Message {
+    id: string
+    text: string
+    author: User
+    time: datetime    
+}
+
+command AddMessage
+event MessageAdded {
+    comment: Comment
+    meetup: Meetup
+}
+
+// Public and private - Out of scope
+// Public messages - visible on the meetup page to everyone (question, thanks)
+// Private - between users, meetup internal - only for confimed users for example
+
+// Schedules - Out of scope
+// As a user I want to have recurring meetups
+entity MeetupSchedule {
+
+}
+
+
+// Registered user
+entity User {
+    id: string
+    name: string
+    email: string    
+    created_at: datetime // registration date
+    // meetups: Meetup[] // we probably don't want user to hold every meetup he has ever attended
+}
+
+command CreateUser
+event UserCreated
+
+command UpdateUser
+event UserUpdated

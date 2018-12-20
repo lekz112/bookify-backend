@@ -1,0 +1,10 @@
+schema: schema.graphql
+overwrite: true
+generates:
+  src/types.ts:    
+    config:
+      contextType: ./index#BookifyContext
+    plugins:      
+      - typescript-common
+      - typescript-server
+      - typescript-resolvers
