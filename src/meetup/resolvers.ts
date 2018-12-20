@@ -1,4 +1,4 @@
-import { QueryResolvers, Meetup, MutationResolvers } from '../types'
+import { Meetup, MutationResolvers, QueryResolvers } from '../types';
 
 interface MeetupResolvers {
     Query: {
@@ -14,7 +14,7 @@ export const meetupResolvers: MeetupResolvers = {
     Query: {
         meetups: async (_parent, _args, context): Promise<Meetup[]> => {
             const { meetupRepository } = context;
-            return meetupRepository.findAll()
+            return meetupRepository.findAll();
         }
     },
     Mutation: {
