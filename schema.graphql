@@ -12,10 +12,13 @@ type Mutation {
   cancelMeetup(input: CancelMeetupInput!): Meetup!
 }
 
+scalar DateTime
+
 type Meetup {
   id: String!
   name: String!
   status: MeetupStatus!
+  created_at: DateTime!
 }
 
 enum MeetupStatus {

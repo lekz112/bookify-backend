@@ -1,0 +1,12 @@
+{
+   "type": "postgres",
+   "url": "postgres://localhost:5432/bookify",
+   "synchronize": false,
+   "logging": false,
+   "migrations": [
+      "src/migrations/**/*.ts"
+   ],
+   "cli": {
+      "migrationsDir": "src/migrations"      
+   }
+}

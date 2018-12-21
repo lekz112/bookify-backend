@@ -1,5 +1,3 @@
-import { MeetupRepository } from "./repository/meetupRepository";
-import { StubMeetupRepository } from "./repository/stubMeetupRepository";
-
-export const meetupRepository: MeetupRepository = new StubMeetupRepository();
+export { MeetupRepository } from "./repository/meetupRepository";
+export { PostgressMetupRepository } from './repository/postgressMeetupRepository';
 export { meetupResolvers } from './resolvers'

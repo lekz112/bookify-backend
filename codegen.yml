@@ -5,6 +5,7 @@ generates:
     config:
       contextType: ./index#BookifyContext
     plugins:      
+      - time
       - typescript-common
       - typescript-server
       - typescript-resolvers

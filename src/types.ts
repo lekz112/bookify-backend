@@ -1,3 +1,5 @@
+// Generated in 2018-12-21T12:20:26+07:00
+
 export interface CreateMeetupInput {
   name: string;
 }
@@ -10,6 +12,12 @@ export enum MeetupStatus {
   Scheduled = "SCHEDULED",
   Canceled = "CANCELED"
 }
+
+export type DateTime = any;
+
+// ====================================================
+// Scalars
+// ====================================================
 
 // ====================================================
 // Types
@@ -25,6 +33,8 @@ export interface Meetup {
   name: string;
 
   status: MeetupStatus;
+
+  created_at: DateTime;
 }
 
 export interface Mutation {
@@ -118,6 +128,8 @@ export namespace MeetupResolvers {
     name?: NameResolver<string, TypeParent, Context>;
 
     status?: StatusResolver<MeetupStatus, TypeParent, Context>;
+
+    created_at?: CreatedAtResolver<DateTime, TypeParent, Context>;
   }
 
   export type IdResolver<
@@ -132,6 +144,11 @@ export namespace MeetupResolvers {
   > = Resolver<R, Parent, Context>;
   export type StatusResolver<
     R = MeetupStatus,
+    Parent = Meetup,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+  export type CreatedAtResolver<
+    R = DateTime,
     Parent = Meetup,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
@@ -194,4 +211,9 @@ export type DeprecatedDirectiveResolver<Result> = DirectiveResolverFn<
 export interface DeprecatedDirectiveArgs {
   /** Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax (as specified by [CommonMark](https://commonmark.org/). */
   reason?: string | null;
+}
+
+export interface DateTimeScalarConfig
+  extends GraphQLScalarTypeConfig<DateTime, any> {
+  name: "DateTime";
 }

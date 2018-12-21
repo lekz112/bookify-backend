@@ -4,6 +4,7 @@ export interface Meetup {
     id: string,
     name: string
     status: MeetupStatus
+    created_at: Date
 }
 
 export enum MeetupStatus {
