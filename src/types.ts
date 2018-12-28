@@ -1,4 +1,4 @@
-// Generated in 2018-12-28T16:57:08+07:00
+// Generated in 2018-12-28T17:28:30+07:00
 
 export interface CreateMeetupInput {
   name: string;

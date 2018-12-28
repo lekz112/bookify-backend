@@ -3,13 +3,15 @@ import { importSchema } from 'graphql-import';
 import { default as Koa } from 'koa';
 import { default as KoaRouter } from 'koa-router';
 import { meetupResolvers, PostgressMetupRepository, MeetupRepository } from './meetup'
-import { userResolvers } from './users'
+import { userResolvers, UserService } from './users'
 import { createConnection } from 'typeorm';
+import { PostgressUsersRepository } from './users/postgressUsersRepository';
 
 type KoaContext = import('koa').Context;
 
 export interface BookifyContext {
     meetupRepository: MeetupRepository
+    userService: UserService
 }
 
 const extractBearerToken = (header: string): string | undefined => {
@@ -35,10 +37,6 @@ const main = async () => {
     // Initialize DB connection
     const connection = await createConnection();
 
-    // Create the context object
-    const context: BookifyContext = {
-        meetupRepository: new PostgressMetupRepository(connection)
-    }
     let schema = makeExecutableSchema({ typeDefs, resolvers: [meetupResolvers, userResolvers] as any });
     let apolloServer = new ApolloServer({
         schema,
@@ -48,7 +46,8 @@ const main = async () => {
 
 
             return {
-                meetupRepository: new PostgressMetupRepository(connection)
+                meetupRepository: new PostgressMetupRepository(connection),
+                userService: new UserService(new PostgressUsersRepository(connection))
             }
         },
         introspection: true,

@@ -12,14 +12,14 @@ interface UserResolvers {
 
 export const userResolvers: UserResolvers = {
     Query: {
-        user: async (_parent, _args, context): Promise<User> => {            
-            throw new Error("Not implemented");
+        user: async (_parent, _args, { userService }): Promise<User> => {            
+            // TODO: ???
+            return userService.findById("id")
         }
     },
     Mutation: {
-        signUp: async (_parent, { input }, context): Promise<SignUpPayload> => {
-            console.log(input.email);
-            throw new Error("Not implemented");
+        signUp: async (_parent, { input }, { userService }): Promise<SignUpPayload> => {            
+            return userService.signUp(input.email, input.password);
         },
 
         signIn: async (_parent, { input }, context): Promise<SignInPayload> => {
