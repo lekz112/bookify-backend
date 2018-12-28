@@ -4,12 +4,15 @@ schema {
 }
 
 type Query {
-  meetups: [Meetup!]!  
+  meetups: [Meetup!]!
+  user: User!
 }
 
 type Mutation {
   createMeetup(input: CreateMeetupInput!): Meetup!
   cancelMeetup(input: CancelMeetupInput!): Meetup!
+  signUp(input: SignUpInput!): SignUpPayload
+  signIn(input: SignInInput!): SignInPayload!
 }
 
 scalar DateTime
@@ -19,6 +22,11 @@ type Meetup {
   name: String!
   status: MeetupStatus!
   created_at: DateTime!
+}
+
+type User {
+  id: String!
+  email: String!
 }
 
 enum MeetupStatus {
@@ -32,4 +40,24 @@ input CreateMeetupInput {
 
 input CancelMeetupInput {
   id: String!
+}
+
+input SignUpInput {
+  email: String!
+  password: String!
+}
+
+type SignUpPayload {
+  user: User!
+  token: String!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+type SignInPayload {
+  user: User!
+  token: String!
 }

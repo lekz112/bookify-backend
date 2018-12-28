@@ -1,4 +1,4 @@
-// Generated in 2018-12-21T12:20:26+07:00
+// Generated in 2018-12-28T16:57:08+07:00
 
 export interface CreateMeetupInput {
   name: string;
@@ -6,6 +6,18 @@ export interface CreateMeetupInput {
 
 export interface CancelMeetupInput {
   id: string;
+}
+
+export interface SignUpInput {
+  email: string;
+
+  password: string;
+}
+
+export interface SignInInput {
+  email: string;
+
+  password: string;
 }
 
 export enum MeetupStatus {
@@ -25,6 +37,8 @@ export type DateTime = any;
 
 export interface Query {
   meetups: Meetup[];
+
+  user: User;
 }
 
 export interface Meetup {
@@ -37,10 +51,32 @@ export interface Meetup {
   created_at: DateTime;
 }
 
+export interface User {
+  id: string;
+
+  email: string;
+}
+
 export interface Mutation {
   createMeetup: Meetup;
 
   cancelMeetup: Meetup;
+
+  signUp?: SignUpPayload | null;
+
+  signIn: SignInPayload;
+}
+
+export interface SignUpPayload {
+  user: User;
+
+  token: string;
+}
+
+export interface SignInPayload {
+  user: User;
+
+  token: string;
 }
 
 // ====================================================
@@ -52,6 +88,12 @@ export interface CreateMeetupMutationArgs {
 }
 export interface CancelMeetupMutationArgs {
   input: CancelMeetupInput;
+}
+export interface SignUpMutationArgs {
+  input: SignUpInput;
+}
+export interface SignInMutationArgs {
+  input: SignInInput;
 }
 
 import { GraphQLResolveInfo, GraphQLScalarTypeConfig } from "graphql";
@@ -112,10 +154,17 @@ export type DirectiveResolverFn<TResult, TArgs = {}, TContext = {}> = (
 export namespace QueryResolvers {
   export interface Resolvers<Context = BookifyContext, TypeParent = {}> {
     meetups?: MeetupsResolver<Meetup[], TypeParent, Context>;
+
+    user?: UserResolver<User, TypeParent, Context>;
   }
 
   export type MeetupsResolver<
     R = Meetup[],
+    Parent = {},
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+  export type UserResolver<
+    R = User,
     Parent = {},
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
@@ -154,11 +203,34 @@ export namespace MeetupResolvers {
   > = Resolver<R, Parent, Context>;
 }
 
+export namespace UserResolvers {
+  export interface Resolvers<Context = BookifyContext, TypeParent = User> {
+    id?: IdResolver<string, TypeParent, Context>;
+
+    email?: EmailResolver<string, TypeParent, Context>;
+  }
+
+  export type IdResolver<
+    R = string,
+    Parent = User,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+  export type EmailResolver<
+    R = string,
+    Parent = User,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+}
+
 export namespace MutationResolvers {
   export interface Resolvers<Context = BookifyContext, TypeParent = {}> {
     createMeetup?: CreateMeetupResolver<Meetup, TypeParent, Context>;
 
     cancelMeetup?: CancelMeetupResolver<Meetup, TypeParent, Context>;
+
+    signUp?: SignUpResolver<SignUpPayload | null, TypeParent, Context>;
+
+    signIn?: SignInResolver<SignInPayload, TypeParent, Context>;
   }
 
   export type CreateMeetupResolver<
@@ -178,6 +250,68 @@ export namespace MutationResolvers {
   export interface CancelMeetupArgs {
     input: CancelMeetupInput;
   }
+
+  export type SignUpResolver<
+    R = SignUpPayload | null,
+    Parent = {},
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context, SignUpArgs>;
+  export interface SignUpArgs {
+    input: SignUpInput;
+  }
+
+  export type SignInResolver<
+    R = SignInPayload,
+    Parent = {},
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context, SignInArgs>;
+  export interface SignInArgs {
+    input: SignInInput;
+  }
+}
+
+export namespace SignUpPayloadResolvers {
+  export interface Resolvers<
+    Context = BookifyContext,
+    TypeParent = SignUpPayload
+  > {
+    user?: UserResolver<User, TypeParent, Context>;
+
+    token?: TokenResolver<string, TypeParent, Context>;
+  }
+
+  export type UserResolver<
+    R = User,
+    Parent = SignUpPayload,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+  export type TokenResolver<
+    R = string,
+    Parent = SignUpPayload,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+}
+
+export namespace SignInPayloadResolvers {
+  export interface Resolvers<
+    Context = BookifyContext,
+    TypeParent = SignInPayload
+  > {
+    user?: UserResolver<User, TypeParent, Context>;
+
+    token?: TokenResolver<string, TypeParent, Context>;
+  }
+
+  export type UserResolver<
+    R = User,
+    Parent = SignInPayload,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+  export type TokenResolver<
+    R = string,
+    Parent = SignInPayload,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
 }
 
 /** Directs the executor to skip this field or fragment when the `if` argument is true. */
