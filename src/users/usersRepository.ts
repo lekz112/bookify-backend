@@ -1,6 +1,9 @@
 import { User } from "../types";
 
 export interface UsersRepository {
-    findById(id: string): Promise<User>    
-    create(email: string): Promise<User>    
+    findByEmail(email: string): Promise<UserWithPassword>;
+    findById(id: string): Promise<User>
+    create(email: string, password: string): Promise<User>
 }
+
+export type UserWithPassword = User & { password: string }

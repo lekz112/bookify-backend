@@ -12,9 +12,12 @@ interface UserResolvers {
 
 export const userResolvers: UserResolvers = {
     Query: {
-        user: async (_parent, _args, { userService }): Promise<User> => {            
-            // TODO: ???
-            return userService.findById("id")
+        user: async (_parent, _args, { userService, userId }): Promise<User> => {    
+            // Q: who should check that we are logged in here?
+            if (!userId) {
+                throw new Error("Unauthorized");
+            }                    
+            return userService.findById(userId)
         }
     },
     Mutation: {
@@ -22,9 +25,8 @@ export const userResolvers: UserResolvers = {
             return userService.signUp(input.email, input.password);
         },
 
-        signIn: async (_parent, { input }, context): Promise<SignInPayload> => {
-            console.log(input.email);
-            throw new Error("Not implemented");
+        signIn: async (_parent, { input }, { userService }): Promise<SignInPayload> => {
+            return userService.signIn(input.email, input.password);
         }
     }
 };

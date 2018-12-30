@@ -6,12 +6,14 @@ import { meetupResolvers, PostgressMetupRepository, MeetupRepository } from './m
 import { userResolvers, UserService } from './users'
 import { createConnection } from 'typeorm';
 import { PostgressUsersRepository } from './users/postgressUsersRepository';
+import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
 
 type KoaContext = import('koa').Context;
 
 export interface BookifyContext {
     meetupRepository: MeetupRepository
     userService: UserService
+    userId: string
 }
 
 const extractBearerToken = (header: string): string | undefined => {
@@ -44,10 +46,23 @@ const main = async () => {
             const authorizationHeader = ctx.get('Authorization');
             const bearerToken = extractBearerToken(authorizationHeader);
 
+            let userId: string
+            if (bearerToken) {                
+                try {                
+                    userId = (jsonwebtoken.verify(bearerToken, "secret") as any).id; // result.id
+                } catch (error) {
+                    if (error instanceof TokenExpiredError) {
+                        // TODO: add a proper type
+                        throw new Error("Token expired");
+                    }
+                }                
+            }
+            console.log("result: " + userId);
 
             return {
                 meetupRepository: new PostgressMetupRepository(connection),
-                userService: new UserService(new PostgressUsersRepository(connection))
+                userService: new UserService(new PostgressUsersRepository(connection)),
+                userId
             }
         },
         introspection: true,
