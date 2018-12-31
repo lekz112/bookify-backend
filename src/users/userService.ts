@@ -1,6 +1,9 @@
 import { User, SignUpPayload, SignInPayload } from "../types";
 import { UsersRepository, UserWithPassword } from "./usersRepository";
 import jsonwebtoken from "jsonwebtoken";
+import * as bcrypt from 'bcrypt';
+import config from '../config'
+import { QueryFailedError } from "typeorm";
 
 export class UserService {
     constructor(private userRepository: UsersRepository) { }
@@ -10,29 +13,32 @@ export class UserService {
     }
 
     async signIn(email: string, password: string): Promise<SignInPayload> {
-        let user: UserWithPassword;
-        try {
-            user = await this.userRepository.findByEmail(email);
-        } catch (error) {
+        const user = await this.userRepository.findByEmail(email);
+        if (!user) {
             throw new Error("Email or password is not correct")
         }
-        // FIXME: compare salted hashes
-        if (!user || user.password != password) {
+
+        const isSame = await bcrypt.compare(password, user.password);
+        if (!isSame) {
             throw new Error("Email or password is not correct")
         }
-        return {
-            user,
-            token: this.signJWT(user.id)
-        }
+
+        return { user, token: this.signJWT(user.id) };
     }
 
     async signUp(email: string, password: string): Promise<SignUpPayload> {
-        // FIXME: obviously, we don't want to store plain-text passwords
-        const user = await this.userRepository.create(email, password);        
-        return {
-            user,
-            token: this.signJWT(user.id)
-        };
+        const hashedPassword = await bcrypt.hash(password, config.bcryptSaltRounts);
+        try {
+            const user = await this.userRepository.create(email, hashedPassword);
+
+            return { user, token: this.signJWT(user.id) };
+        }
+        catch (error) {
+            if (error instanceof QueryFailedError && error.message.includes("duplicate key")) {
+                throw new Error("Email is already used");
+            }
+            throw error;
+        }
     }
 
     private signJWT(id: string): string {
