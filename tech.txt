@@ -1,3 +1,6 @@
+typeorm migration:create -n PostRefactoring
+
+
 table Meetups
 
 table MeetupInvitations(

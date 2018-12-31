@@ -1,4 +1,4 @@
-// Generated in 2018-12-30T13:06:36+07:00
+// Generated in 2018-12-31T20:15:25+05:00
 
 export interface CreateMeetupInput {
   name: string;
@@ -25,6 +25,11 @@ export enum MeetupStatus {
   Canceled = "CANCELED"
 }
 
+export enum MeetupRole {
+  Owner = "OWNER",
+  Guest = "GUEST"
+}
+
 export type DateTime = any;
 
 // ====================================================
@@ -49,6 +54,14 @@ export interface Meetup {
   status: MeetupStatus;
 
   created_at: DateTime;
+
+  attendees: MeetupAttendance[];
+}
+
+export interface MeetupAttendance {
+  user: User;
+
+  role: MeetupRole;
 }
 
 export interface User {
@@ -179,6 +192,8 @@ export namespace MeetupResolvers {
     status?: StatusResolver<MeetupStatus, TypeParent, Context>;
 
     created_at?: CreatedAtResolver<DateTime, TypeParent, Context>;
+
+    attendees?: AttendeesResolver<MeetupAttendance[], TypeParent, Context>;
   }
 
   export type IdResolver<
@@ -199,6 +214,33 @@ export namespace MeetupResolvers {
   export type CreatedAtResolver<
     R = DateTime,
     Parent = Meetup,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+  export type AttendeesResolver<
+    R = MeetupAttendance[],
+    Parent = Meetup,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+}
+
+export namespace MeetupAttendanceResolvers {
+  export interface Resolvers<
+    Context = BookifyContext,
+    TypeParent = MeetupAttendance
+  > {
+    user?: UserResolver<User, TypeParent, Context>;
+
+    role?: RoleResolver<MeetupRole, TypeParent, Context>;
+  }
+
+  export type UserResolver<
+    R = User,
+    Parent = MeetupAttendance,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+  export type RoleResolver<
+    R = MeetupRole,
+    Parent = MeetupAttendance,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
 }

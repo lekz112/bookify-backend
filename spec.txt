@@ -107,7 +107,7 @@ event UserRemovedFromAttendeeList {}
 // Is every attendee a user? yes.
 // Isn't that MeetupInvitation? Yep, let's call it MeetupInvitation then. (Was Attendee)
 // Proper status vs actual dates (declined_at, canceled_at)
-entity MeetupInvitation {    
+entity MeetupAttendance (MeetupInvitation/Attendee) {    
     id: string
     user: User
     meetup: Meetup
