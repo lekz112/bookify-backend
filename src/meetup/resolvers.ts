@@ -37,8 +37,8 @@ export const meetupResolvers: MeetupResolvers = {
         }
     },
     Meetup: {
-        attendees: async ({ id }, _args, { meetupRepository, userService }): Promise<MeetupAttendance[]> => {
-            const attendees = await meetupRepository.findAll2(id)
+        attendees: async ({ id }, _args, { meetupAttendanceRepository, userService }): Promise<MeetupAttendance[]> => {
+            const attendees = await meetupAttendanceRepository.findByMeetupId(id)
             return await Promise.all(attendees.map(async (attendee) => ({
                 role: attendee.role,
                 user: await userService.findById(attendee.user_id)

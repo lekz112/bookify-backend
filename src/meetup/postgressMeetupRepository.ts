@@ -1,10 +1,11 @@
 import { Connection } from "typeorm";
-import { Meetup, MeetupRepository, MeetupStatus, MeetupRole, MeetupAttendance } from "./meetupRepository";
+import { Meetup, MeetupRepository, MeetupStatus } from "./meetupRepository";
+import { MeetupRole } from "./meetupAttendanceRepository";
 
 export class PostgressMetupRepository implements MeetupRepository {
-
-    private meetupAttendancesTable: string = "meetup_attendances";
+    
     private meetupsTable: string = "meetups"
+    private meetupAttendancesTable: string = "meetup_attendances";
 
     constructor(private connection: Connection) {
     }
@@ -15,15 +16,6 @@ export class PostgressMetupRepository implements MeetupRepository {
             .from(this.meetupsTable, 'meetups')
             .where('meetups.status != :status', { status: MeetupStatus.Canceled })            
             .getRawMany()
-    }
-
-    // TODO: move to a separate repository
-    findAll2(meetupId: string): Promise<MeetupAttendance[]> {
-        return this.connection.createQueryBuilder()
-            .select()
-            .from(this.meetupAttendancesTable, 'meetup_attendances')
-            .where('meetup_attendances.meetup_id = :meetup_id', { meetup_id: meetupId })            
-            .getRawMany()            
     }
 
     async create(ownerId: string, name: string): Promise<Meetup> {

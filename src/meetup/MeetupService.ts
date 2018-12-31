@@ -1,4 +1,4 @@
-import { MeetupRepository, Meetup } from "./repository/meetupRepository";
+import { MeetupRepository, Meetup } from "./meetupRepository";
 
 export class MeetupService {
 

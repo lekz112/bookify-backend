@@ -2,7 +2,7 @@ import { ApolloServer, makeExecutableSchema, addSchemaLevelResolveFunction } fro
 import { importSchema } from 'graphql-import';
 import { default as Koa } from 'koa';
 import { default as KoaRouter } from 'koa-router';
-import { meetupResolvers, PostgressMetupRepository, MeetupRepository } from './meetup'
+import { meetupResolvers, PostgressMetupRepository, MeetupRepository, MeetupAttendanceRepository, PostgressMeetupAttendanceRepository } from './meetup'
 import { userResolvers, UserService } from './users'
 import { createConnection } from 'typeorm';
 import { PostgressUsersRepository } from './users/postgressUsersRepository';
@@ -10,8 +10,9 @@ import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
 
 type KoaContext = import('koa').Context;
 
-export interface BookifyContext {
+export type BookifyContext = {
     meetupRepository: MeetupRepository
+    meetupAttendanceRepository: MeetupAttendanceRepository
     userService: UserService
     userId: string
 }
@@ -48,7 +49,7 @@ const main = async () => {
     })
     let apolloServer = new ApolloServer({
         schema,
-        context: async ({ ctx }: { ctx: KoaContext }) => {
+        context: async ({ ctx }: { ctx: KoaContext }): Promise<BookifyContext> => {
             const authorizationHeader = ctx.get('Authorization');
             const bearerToken = extractBearerToken(authorizationHeader);
 
@@ -67,6 +68,7 @@ const main = async () => {
 
             return {
                 meetupRepository: new PostgressMetupRepository(connection),
+                meetupAttendanceRepository: new PostgressMeetupAttendanceRepository(connection),
                 userService: new UserService(new PostgressUsersRepository(connection)),
                 userId
             }
