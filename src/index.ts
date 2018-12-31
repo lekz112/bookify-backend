@@ -1,4 +1,4 @@
-import { ApolloServer, makeExecutableSchema } from 'apollo-server-koa';
+import { ApolloServer, makeExecutableSchema, addSchemaLevelResolveFunction } from 'apollo-server-koa';
 import { importSchema } from 'graphql-import';
 import { default as Koa } from 'koa';
 import { default as KoaRouter } from 'koa-router';
@@ -39,7 +39,13 @@ const main = async () => {
     // Initialize DB connection
     const connection = await createConnection();
 
-    let schema = makeExecutableSchema({ typeDefs, resolvers: [meetupResolvers, userResolvers] as any });
+    const schema = makeExecutableSchema({ typeDefs, resolvers: [meetupResolvers, userResolvers] as any });
+    addSchemaLevelResolveFunction(schema, (source, args, context, info) => {
+        // Unless user signs in/up, check that he is authorized (we know his userId)
+        if (!['signIn', 'signUp'].includes(info.fieldName) && !context.userId) {        
+            throw new Error("Unauthorized");
+        }        
+    })
     let apolloServer = new ApolloServer({
         schema,
         context: async ({ ctx }: { ctx: KoaContext }) => {
@@ -47,15 +53,15 @@ const main = async () => {
             const bearerToken = extractBearerToken(authorizationHeader);
 
             let userId: string
-            if (bearerToken) {                
-                try {                
+            if (bearerToken) {
+                try {
                     userId = (jsonwebtoken.verify(bearerToken, "secret") as any).id; // result.id
                 } catch (error) {
                     if (error instanceof TokenExpiredError) {
                         // TODO: add a proper type
                         throw new Error("Token expired");
                     }
-                }                
+                }
             }
             console.log("result: " + userId);
 

@@ -12,11 +12,7 @@ interface UserResolvers {
 
 export const userResolvers: UserResolvers = {
     Query: {
-        user: async (_parent, _args, { userService, userId }): Promise<User> => {    
-            // Q: who should check that we are logged in here?
-            if (!userId) {
-                throw new Error("Unauthorized");
-            }                    
+        user: async (_parent, _args, { userService, userId }): Promise<User> => {                                           
             return userService.findById(userId)
         }
     },
