@@ -1,6 +1,6 @@
 import { User, SignUpPayload, SignInPayload } from "../types";
-import { UsersRepository, UserWithPassword } from "./usersRepository";
-import jsonwebtoken from "jsonwebtoken";
+import { UsersRepository } from "./usersRepository";
+import { signJWT } from './JWT'
 import * as bcrypt from 'bcrypt';
 import config from '../config'
 import { QueryFailedError } from "typeorm";
@@ -23,7 +23,7 @@ export class UserService {
             throw new Error("Email or password is not correct")
         }
 
-        return { user, token: this.signJWT(user.id) };
+        return { user, token: signJWT(user.id) };
     }
 
     async signUp(email: string, password: string): Promise<SignUpPayload> {
@@ -31,7 +31,7 @@ export class UserService {
         try {
             const user = await this.userRepository.create(email, hashedPassword);
 
-            return { user, token: this.signJWT(user.id) };
+            return { user, token: signJWT(user.id) };
         }
         catch (error) {
             if (error instanceof QueryFailedError && error.message.includes("duplicate key")) {
@@ -39,13 +39,5 @@ export class UserService {
             }
             throw error;
         }
-    }
-
-    private signJWT(id: string): string {
-        return jsonwebtoken.sign(
-            { id },
-            "secret",
-            { expiresIn: "7d" }
-        );
-    }
+    }    
 }

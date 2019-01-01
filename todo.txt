@@ -4,3 +4,7 @@ Dataloader
 applyForMeetup
 attendMeetup
 cancelAttendance
+
+integration tests
+
+pubSub for meetup cancelation

@@ -1,4 +1,5 @@
-{
+[{
+   "name": "default",
    "type": "postgres",
    "url": "postgres://localhost:5432/bookify",
    "synchronize": false,
@@ -9,4 +10,19 @@
    "cli": {
       "migrationsDir": "src/migrations"      
    }
+}, {
+   "name": "test",
+   "type": "postgres",
+   "url": "postgres://localhost:5432/bookify_test",
+   "dropSchema": true,
+   "migrationsRun": true,
+   "synchronize": false,
+   "logging": false,
+   "migrations": [
+      "src/migrations/**/*.ts"
+   ],
+   "cli": {
+      "migrationsDir": "src/migrations"      
+   }
 }
+]
