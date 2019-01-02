@@ -3,57 +3,46 @@ import { ApolloClient } from 'apollo-client';
 import { setContext } from 'apollo-link-context';
 import { createHttpLink } from 'apollo-link-http';
 import { After, Given } from 'cucumber';
-import fetch from "isomorphic-fetch";
+
 import { default as Koa } from 'koa';
 import { Server } from "net";
 import { Connection, createConnection } from "typeorm";
 import { createApolloServer } from "../../src/createApolloServer";
 import { createContextFunction } from "../../src/createContextFunction";
 import { signJWT } from '../../src/users/JWT';
-import * as util from 'util' // has no default export
+import uuid from 'uuid'
+import { testApolloClient } from './testApolloClient';
+import { Meetup } from '../../src/types';
 
 declare module 'cucumber' {
     interface World {
-        server: Server;
-        client: ApolloClient<{}>;
-        connection: Connection;
-        response: any;
         userId: string;
+        server: Server;
+        client: ApolloClient<{}>;        
+        connection: Connection;  
+        response: any;      
     }
 }
 
-Given(/^a signed in user with id '(.*)'/, async function(id) {
-    this.userId = id;
-    const PORT = 8888;
-    const token = signJWT(id);
-    const koaServer = new Koa();
-    const authLink = setContext((_, { headers }) => {
-        return {
-            headers: {
-                ...headers,
-                authorization: token ? `Bearer ${token}` : "",
-            }
-        }
-    });
-    const httpLink = createHttpLink({
-        uri: `http://localhost:${PORT}/graphql`,
-        fetch
-    });
-    this.client = new ApolloClient({
-        link: authLink.concat(httpLink),
-        cache: new InMemoryCache()        
-    });
+Given(/^a signed in user/, async function() {
+    this.userId = uuid.v1();
+    const token = signJWT(this.userId);
+    const port = 8888;    
+    // Create test client
+    this.client = testApolloClient(token, port);
 
     // Initialize DB connection    
     this.connection = await createConnection("test");    
     // Seed data
-    await this.connection.createQueryBuilder().insert().into('users').values({ id: id, email: "email", password: "password" }).execute();
+    await this.connection.createQueryBuilder().insert().into('users').values({ id: this.userId, email: "email", password: "password" }).execute();
     // Build context
     const contextFunction = createContextFunction(this.connection);
+    
+    // Start serever
     const apolloServer = createApolloServer(contextFunction);
+    const koaServer = new Koa();
     apolloServer.applyMiddleware({ app: koaServer })
-
-    this.server = await koaServer.listen(PORT);    
+    this.server = await koaServer.listen(port);    
 });
 
 After(async function() {
