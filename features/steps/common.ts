@@ -18,10 +18,12 @@ declare module 'cucumber' {
         client: ApolloClient<{}>;
         connection: Connection;
         response: any;
+        userId: string;
     }
 }
 
 Given(/^a signed in user with id '(.*)'/, async function(id) {
+    this.userId = id;
     const PORT = 8888;
     const token = signJWT(id);
     const koaServer = new Koa();

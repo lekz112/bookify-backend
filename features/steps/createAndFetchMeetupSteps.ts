@@ -11,3 +11,8 @@ Then(/^the system should should respond with a singe meetup with following detai
     expect(this.response.data.meetups).to.have.lengthOf(1);    
     expect(this.response.data.meetups[0].name).to.be.equal(dataTable.rowsHash().name);
 });
+
+Then(/^the user should be the owner of this meetup$/, function() {    
+    expect(this.response.data.meetups[0].attendees[0].role).to.be.equal('OWNER');
+    expect(this.response.data.meetups[0].attendees[0].user.id).to.be.equal(this.userId);
+});
