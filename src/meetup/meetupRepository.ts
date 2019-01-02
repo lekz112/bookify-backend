@@ -13,5 +13,5 @@ export enum MeetupStatus {
 export interface MeetupRepository {
     findAll(): Promise<Meetup[]>        
     create(ownerId: string, name: string): Promise<Meetup>
-    delete(id: string): Promise<Meetup>
+    cancel(id: string): Promise<Meetup>
 }

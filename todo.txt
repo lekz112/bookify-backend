@@ -1,5 +1,7 @@
 Add logging
-Dataloader
+Trace function calls
+    Dataloader
+Deploy
 
 applyForMeetup
 attendMeetup

@@ -32,7 +32,7 @@ export const meetupResolvers: MeetupResolvers = {
         },
 
         cancelMeetup: async (_parent, { input }, { meetupRepository }): Promise<Meetup> => {
-            const meetup = await meetupRepository.delete(input.id);
+            const meetup = await meetupRepository.cancel(input.id);
             return { ...meetup, attendees: [] };
         }
     },

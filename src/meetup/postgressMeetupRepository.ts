@@ -40,7 +40,7 @@ export class PostgressMetupRepository implements MeetupRepository {
         });
     }
 
-    async delete(id: string): Promise<Meetup> {
+    async cancel(id: string): Promise<Meetup> {
         const result = await this.connection.createQueryBuilder()
             .update(this.meetupsTable)
             .set({ status: MeetupStatus.Canceled })
