@@ -8,8 +8,9 @@ export class CreateMeetupAttendanceTable1546260272481 implements MigrationInterf
                 user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,                
                 meetup_id uuid NOT NULL REFERENCES meetups(id) ON DELETE CASCADE,
                 role VARCHAR(20) NOT NULL,
-                PRIMARY KEY (meetup_id, user_id)                
+                canceled_at TIMESTAMP                              
             );            
+            CREATE UNIQUE INDEX ON meetup_attendances (meetup_id, user_id) WHERE canceled_at IS NULL;
         `);
     }
 

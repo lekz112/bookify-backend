@@ -3,7 +3,7 @@ import { MeetupAttendanceRepository, MeetupAttendance, MeetupRole } from "./meet
 import { QueryFailedError } from "typeorm";
 
 export class MeetupService {
-
+    
     constructor(private meetupRepository: MeetupRepository, private meetupAttendanceRepository: MeetupAttendanceRepository) { }
 
     async createMeetup(userId: string, name: string): Promise<Meetup> {
@@ -21,5 +21,9 @@ export class MeetupService {
             }
             throw error;
         }
+    }
+
+    async cancelMeetupAttendance(userId: string, meetupId: string): Promise<MeetupAttendance> {
+        return this.meetupAttendanceRepository.cancel(userId, meetupId);
     }
 }

@@ -3,6 +3,7 @@ import { PostgressMetupRepository, PostgressMeetupAttendanceRepository } from ".
 import { PostgressUsersRepository } from "../src/users/postgressUsersRepository";
 import { company, internet } from 'faker'
 import { Meetup } from "../src/types";
+import { MeetupAttendanceStatus } from "../src/meetup/meetupAttendanceRepository";
 
 export const createMeetup = async (connection: Connection): Promise<Meetup> => {
     const userRepo = new PostgressUsersRepository(connection);
@@ -14,6 +15,8 @@ export const createMeetup = async (connection: Connection): Promise<Meetup> => {
     const attendees = await meetupAttendanceRepo.findByMeetupId(meetup.id);
     const userAttendess = await Promise.all(attendees.map(async (attendee) => ({
         role: attendee.role,
+        // TODO: duplication in resolver
+        status: attendee.canceled_at ? MeetupAttendanceStatus.Canceled : MeetupAttendanceStatus.Confirmed,
         user: await userRepo.findById(attendee.user_id)
     })));
 

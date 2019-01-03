@@ -2,7 +2,8 @@
 export type MeetupAttendance = {
     user_id: string,
     meetup_id: string,
-    role: MeetupRole
+    role: MeetupRole,
+    canceled_at: Date
 }
 
 export enum MeetupRole {
@@ -10,7 +11,13 @@ export enum MeetupRole {
     Guest = "GUEST"
 }
 
+export enum MeetupAttendanceStatus {
+    Confirmed = "CONFIRMED",
+    Canceled = "CANCELED"
+}
+
 export interface MeetupAttendanceRepository {
+    findByMeetupId(meetupId: string): Promise<MeetupAttendance[]>    
     create(userId: string, meetupId: string, role: MeetupRole): Promise<MeetupAttendance>;
-    findByMeetupId(meetupId: string): Promise<MeetupAttendance[]>
+    cancel(userId: string, meetupId: string): Promise<MeetupAttendance>;    
 }

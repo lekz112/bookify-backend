@@ -9,6 +9,7 @@ query MeetupById($id: String!) {
     created_at
     attendees {
       role
+      status
       user {
         id
         email

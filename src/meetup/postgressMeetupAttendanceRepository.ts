@@ -1,5 +1,5 @@
-import { MeetupAttendanceRepository, MeetupAttendance, MeetupRole } from "./meetupAttendanceRepository";
 import { Connection } from "typeorm";
+import { MeetupAttendance, MeetupAttendanceRepository, MeetupRole } from "./meetupAttendanceRepository";
 
 export class PostgressMeetupAttendanceRepository implements MeetupAttendanceRepository {
 
@@ -21,6 +21,17 @@ export class PostgressMeetupAttendanceRepository implements MeetupAttendanceRepo
             .insert()
             .into(this.meetupAttendancesTable)
             .values({ user_id: userId, meetup_id: meetupId, role: role })
+            .returning('*')
+            .execute();
+
+        return result.raw[0] as MeetupAttendance;
+    }
+
+    async cancel(userId: string, meetupId: string): Promise<MeetupAttendance> {
+        const result = await this.connection.createQueryBuilder()
+            .update(this.meetupAttendancesTable)
+            .set({ canceled_at: 'NOW()' })
+            .where('user_id = :userId AND meetup_id = :meetupId', { userId, meetupId })
             .returning('*')
             .execute();
 

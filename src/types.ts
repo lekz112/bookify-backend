@@ -1,4 +1,4 @@
-// Generated in 2019-01-03T13:49:21+05:00
+// Generated in 2019-01-03T22:31:26+05:00
 
 export interface CreateMeetupInput {
   name: string;
@@ -28,6 +28,11 @@ export enum MeetupStatus {
 export enum MeetupRole {
   Owner = "OWNER",
   Guest = "GUEST"
+}
+
+export enum MeetupAttendanceStatus {
+  Confirmed = "CONFIRMED",
+  Canceled = "CANCELED"
 }
 
 export type DateTime = any;
@@ -64,6 +69,8 @@ export interface MeetupAttendance {
   user: User;
 
   role: MeetupRole;
+
+  status: MeetupAttendanceStatus;
 }
 
 export interface User {
@@ -78,6 +85,8 @@ export interface Mutation {
   cancelMeetup: Meetup;
 
   applyForMeetup: MeetupAttendance;
+
+  cancelMeetupAttendance: MeetupAttendance;
 
   signUp?: SignUpPayload | null;
 
@@ -110,6 +119,9 @@ export interface CancelMeetupMutationArgs {
   input: CancelMeetupInput;
 }
 export interface ApplyForMeetupMutationArgs {
+  meetupId: string;
+}
+export interface CancelMeetupAttendanceMutationArgs {
   meetupId: string;
 }
 export interface SignUpMutationArgs {
@@ -252,6 +264,8 @@ export namespace MeetupAttendanceResolvers {
     user?: UserResolver<User, TypeParent, Context>;
 
     role?: RoleResolver<MeetupRole, TypeParent, Context>;
+
+    status?: StatusResolver<MeetupAttendanceStatus, TypeParent, Context>;
   }
 
   export type UserResolver<
@@ -261,6 +275,11 @@ export namespace MeetupAttendanceResolvers {
   > = Resolver<R, Parent, Context>;
   export type RoleResolver<
     R = MeetupRole,
+    Parent = MeetupAttendance,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+  export type StatusResolver<
+    R = MeetupAttendanceStatus,
     Parent = MeetupAttendance,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
@@ -297,6 +316,12 @@ export namespace MutationResolvers {
       Context
     >;
 
+    cancelMeetupAttendance?: CancelMeetupAttendanceResolver<
+      MeetupAttendance,
+      TypeParent,
+      Context
+    >;
+
     signUp?: SignUpResolver<SignUpPayload | null, TypeParent, Context>;
 
     signIn?: SignInResolver<SignInPayload, TypeParent, Context>;
@@ -326,6 +351,15 @@ export namespace MutationResolvers {
     Context = BookifyContext
   > = Resolver<R, Parent, Context, ApplyForMeetupArgs>;
   export interface ApplyForMeetupArgs {
+    meetupId: string;
+  }
+
+  export type CancelMeetupAttendanceResolver<
+    R = MeetupAttendance,
+    Parent = {},
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context, CancelMeetupAttendanceArgs>;
+  export interface CancelMeetupAttendanceArgs {
     meetupId: string;
   }
 

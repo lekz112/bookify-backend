@@ -1,10 +1,6 @@
-import {
-    Meetup, MutationResolvers, QueryResolvers, MeetupResolvers,
-    MeetupAttendance as MeetupAttendanceAPI,
-    MeetupAttendanceResolvers, User
-} from '../types';
-import { MeetupRole, MeetupAttendance } from './meetupAttendanceRepository';
+import { Meetup, MeetupAttendance as MeetupAttendanceAPI, MeetupAttendanceStatus, MeetupResolvers, MutationResolvers, QueryResolvers } from '../types';
 import { UserService } from '../users';
+import { MeetupAttendance } from './meetupAttendanceRepository';
 
 interface MeetupResolvers {
     Query: {
@@ -15,6 +11,7 @@ interface MeetupResolvers {
         createMeetup: MutationResolvers.CreateMeetupResolver
         cancelMeetup: MutationResolvers.CancelMeetupResolver
         applyForMeetup: MutationResolvers.ApplyForMeetupResolver
+        cancelMeetupAttendance: MutationResolvers.CancelMeetupAttendanceResolver
     }
     Meetup: {
         attendees: MeetupResolvers.AttendeesResolver
@@ -24,6 +21,8 @@ interface MeetupResolvers {
 const convertMeetupAttendance = async (meetupAttendance: MeetupAttendance, userService: UserService): Promise<MeetupAttendanceAPI> => {
     return {
         role: meetupAttendance.role,
+        // TODO: Does this scale?
+        status: meetupAttendance.canceled_at ? MeetupAttendanceStatus.Canceled : MeetupAttendanceStatus.Confirmed,
         user: await userService.findById(meetupAttendance.user_id)
     }
 }
@@ -60,6 +59,10 @@ export const meetupResolvers: MeetupResolvers = {
         applyForMeetup: async (_parent, { meetupId }, { userId, meetupService, userService }): Promise<MeetupAttendanceAPI> => {
             // TODO: resolvers shouldn't decide what the default role is
             const meetupAttendance = await meetupService.applyForMeetup(userId, meetupId);
+            return convertMeetupAttendance(meetupAttendance, userService)
+        },
+        cancelMeetupAttendance: async (_parent, { meetupId }, { userId, meetupService, userService }): Promise<MeetupAttendanceAPI> => {
+            const meetupAttendance = await meetupService.cancelMeetupAttendance(userId, meetupId);
             return convertMeetupAttendance(meetupAttendance, userService)
         }
     },

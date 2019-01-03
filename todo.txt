@@ -3,10 +3,18 @@ Trace function calls
     Dataloader
 Deploy
 
-applyForMeetup
-attendMeetup
++applyForMeetup
 cancelAttendance
 
 integration tests
 
 pubSub for meetup cancelation
+
+better way to handle duplicate key errors:
+    Try to get the code from postgress error, make repository throw domain errors
+
+Move remaining functionality from resolvers into service
+
+Better way to map objects DB -> Domain -> API
+
+Are the meetup and meetupAttendance part of the same bounded context?
