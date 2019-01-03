@@ -1,5 +1,6 @@
 // TODO: Right now we depend on this having the same name as DB column. Definitely not a good idea.
 export type MeetupAttendance = {
+    id: string,
     user_id: string,
     meetup_id: string,
     role: MeetupRole,

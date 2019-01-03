@@ -4,7 +4,8 @@ export class CreateMeetupAttendanceTable1546260272481 implements MigrationInterf
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         return queryRunner.query(`
-            CREATE TABLE meetup_attendances (                
+            CREATE TABLE meetup_attendances (           
+                id uuid PRIMARY KEY DEFAULT uuid_generate_v1(),     
                 user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,                
                 meetup_id uuid NOT NULL REFERENCES meetups(id) ON DELETE CASCADE,
                 role VARCHAR(20) NOT NULL,

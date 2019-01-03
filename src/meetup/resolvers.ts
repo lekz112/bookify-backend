@@ -1,76 +1,68 @@
-import { Meetup, MeetupAttendance as MeetupAttendanceAPI, MeetupAttendanceStatus, MeetupResolvers, MutationResolvers, QueryResolvers } from '../types';
-import { UserService } from '../users';
+import { MeetupAttendanceResolvers, MeetupAttendanceStatus, MeetupResolvers, MutationResolvers, QueryResolvers } from '../types';
 import { MeetupAttendance } from './meetupAttendanceRepository';
 
 interface MeetupResolvers {
     Query: {
         meetups: QueryResolvers.MeetupsResolver
         meetup: QueryResolvers.MeetupResolver
-    }
+    },
     Mutation: {
         createMeetup: MutationResolvers.CreateMeetupResolver
         cancelMeetup: MutationResolvers.CancelMeetupResolver
         applyForMeetup: MutationResolvers.ApplyForMeetupResolver
         cancelMeetupAttendance: MutationResolvers.CancelMeetupAttendanceResolver
-    }
+    },
     Meetup: {
         attendees: MeetupResolvers.AttendeesResolver
-    }
-}
-
-const convertMeetupAttendance = async (meetupAttendance: MeetupAttendance, userService: UserService): Promise<MeetupAttendanceAPI> => {
-    return {
-        role: meetupAttendance.role,
-        // TODO: Does this scale?
-        status: meetupAttendance.canceled_at ? MeetupAttendanceStatus.Canceled : MeetupAttendanceStatus.Confirmed,
-        user: await userService.findById(meetupAttendance.user_id)
+    },
+    MeetupAttendance: {
+        user: MeetupAttendanceResolvers.UserResolver
+        status: MeetupAttendanceResolvers.StatusResolver
     }
 }
 
 export const meetupResolvers: MeetupResolvers = {
     Query: {
-        meetups: async (_parent, _args, context): Promise<Meetup[]> => {
-            const { meetupRepository, userService } = context;
-            const meetups = await meetupRepository.findAll();
-            
-            return meetups.map((meetup) => ({
-                ...meetup,
-                attendees: []
-            }))
+        meetups: (_parent, _args, { meetupRepository }): Promise<any> => {            
+            return meetupRepository.findAll();
         },
-        meetup: async (_parent, { id }, { meetupRepository }): Promise<Meetup> => {
-            const meetup = await meetupRepository.findById(id);
-
-            return {
-                ...meetup,
-                attendees: undefined
-            }
+        meetup: (_parent, { id }, { meetupRepository }): Promise<any> => {
+            return meetupRepository.findById(id);            
         }
     },
     Mutation: {
-        createMeetup: async (_parent, { input }, { meetupRepository, userId }): Promise<Meetup> => {
-            const meetup = await meetupRepository.create(userId, input.name);
-            return { ...meetup, attendees: [] };
+        createMeetup: (_parent, { input }, { meetupRepository, userId }): Promise<any> => {
+            return meetupRepository.create(userId, input.name);            
         },
-        cancelMeetup: async (_parent, { input }, { meetupRepository }): Promise<Meetup> => {
-            const meetup = await meetupRepository.cancel(input.id);
-            return { ...meetup, attendees: [] };
+        cancelMeetup: (_parent, { input }, { meetupRepository }): Promise<any> => {
+            return meetupRepository.cancel(input.id);            
         },
-        applyForMeetup: async (_parent, { meetupId }, { userId, meetupService, userService }): Promise<MeetupAttendanceAPI> => {
-            // TODO: resolvers shouldn't decide what the default role is
-            const meetupAttendance = await meetupService.applyForMeetup(userId, meetupId);
-            return convertMeetupAttendance(meetupAttendance, userService)
+        applyForMeetup: (_parent, { meetupId }, { userId, meetupService }): Promise<any> => {            
+            return meetupService.applyForMeetup(userId, meetupId);            
         },
-        cancelMeetupAttendance: async (_parent, { meetupId }, { userId, meetupService, userService }): Promise<MeetupAttendanceAPI> => {
-            const meetupAttendance = await meetupService.cancelMeetupAttendance(userId, meetupId);
-            return convertMeetupAttendance(meetupAttendance, userService)
+        cancelMeetupAttendance: (_parent, { meetupId }, { userId, meetupService }): Promise<any> => {
+            return meetupService.cancelMeetupAttendance(userId, meetupId);            
+        }
+    },
+    MeetupAttendance: {
+        user: (_parent, _args, { userService}): Promise<any> => {
+            // Problem: we now that our parent resolver returns domain type that contains additional info
+            // According to types though, we cannot know it
+            // Returning the actual graphql type is impossible, since we would need to eagerly resolve stuff
+            // Or well, introduce some kind of "View" objects that contain lazy functions
+            // Though that would require additional mapping, which I don't like
+            // We can also decide not to use generated types here or use our own ones instead
+            const meetupAttendance = <MeetupAttendance><unknown>_parent;
+            return userService.findById(meetupAttendance.user_id);
+        },
+        status: (_parent, _args, _context): any => {
+            const meetupAttendance = <MeetupAttendance><unknown>_parent;
+            return meetupAttendance.canceled_at ? MeetupAttendanceStatus.Canceled : MeetupAttendanceStatus.Confirmed;
         }
     },
     Meetup: {
-        attendees: async ({ id }, _args, { meetupAttendanceRepository, userService }): Promise<MeetupAttendanceAPI[]> => {
-            const attendees = await meetupAttendanceRepository.findByMeetupId(id)
-
-            return await Promise.all(attendees.map(async (attendee) => convertMeetupAttendance(attendee, userService)));
+        attendees: ({ id }, _args, { meetupAttendanceRepository }): Promise<any> => {
+            return meetupAttendanceRepository.findByMeetupId(id);
         }
     }
 };
