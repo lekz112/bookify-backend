@@ -5,11 +5,13 @@ import { createApolloServer } from './createApolloServer';
 import { createContextFunction } from "./createContextFunction";
 import { MeetupAttendanceRepository, MeetupRepository } from './meetup';
 import { UserService } from './users';
+import { MeetupService } from './meetup/MeetupService';
 
 export type BookifyContext = {
     meetupRepository: MeetupRepository
     meetupAttendanceRepository: MeetupAttendanceRepository
     userService: UserService
+    meetupService: MeetupService
     userId: string | undefined
 }
 

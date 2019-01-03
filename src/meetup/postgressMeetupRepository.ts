@@ -3,7 +3,7 @@ import { Meetup, MeetupRepository, MeetupStatus } from "./meetupRepository";
 import { MeetupRole } from "./meetupAttendanceRepository";
 
 export class PostgressMetupRepository implements MeetupRepository {
-    
+
     private meetupsTable: string = "meetups"
     private meetupAttendancesTable: string = "meetup_attendances";
 
@@ -14,8 +14,16 @@ export class PostgressMetupRepository implements MeetupRepository {
         return this.connection.createQueryBuilder()
             .select()
             .from(this.meetupsTable, 'meetups')
-            .where('meetups.status != :status', { status: MeetupStatus.Canceled })            
+            .where('meetups.status != :status', { status: MeetupStatus.Canceled })
             .getRawMany()
+    }
+
+    findById(id: string): Promise<Meetup> {
+        return this.connection.createQueryBuilder()
+            .select()
+            .from(this.meetupsTable, 'meetups')
+            .where('meetups.id = :id', { id })
+            .getRawOne()
     }
 
     async create(ownerId: string, name: string): Promise<Meetup> {

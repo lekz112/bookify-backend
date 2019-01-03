@@ -5,12 +5,16 @@ schema {
 
 type Query {
   meetups: [Meetup!]!
+  meetup(id: String!): Meetup!
   user: User!
 }
 
 type Mutation {
   createMeetup(input: CreateMeetupInput!): Meetup!
   cancelMeetup(input: CancelMeetupInput!): Meetup!
+
+  applyForMeetup(meetupId: String!): MeetupAttendance!
+
   signUp(input: SignUpInput!): SignUpPayload
   signIn(input: SignInInput!): SignInPayload!
 }

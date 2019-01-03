@@ -11,5 +11,6 @@ export enum MeetupRole {
 }
 
 export interface MeetupAttendanceRepository {
+    create(userId: string, meetupId: string, role: MeetupRole): Promise<MeetupAttendance>;
     findByMeetupId(meetupId: string): Promise<MeetupAttendance[]>
 }

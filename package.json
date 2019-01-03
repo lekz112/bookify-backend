@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/cucumber": "^4.0.4",
+    "@types/faker": "^4.1.4",
     "@types/graphql": "^14.0.3",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/jest": "^23.3.10",
@@ -28,6 +29,7 @@
     "chai": "^4.2.0",
     "cucumber": "^5.1.0",
     "cucumber-pretty": "^1.5.0",
+    "faker": "^4.1.0",
     "graphql-code-generator": "^0.14.5",
     "graphql-codegen-time": "^0.15.1",
     "graphql-codegen-typescript-common": "^0.14.5",

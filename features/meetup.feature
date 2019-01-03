@@ -12,7 +12,7 @@ Feature: Meetup
         And the user fetches list of meetups
         Then the user should see meetup called 'MyMeetup' in the list             
 
-    Scenario: Canceling Meetup created meetup
+    Scenario: Canceling created Meetup
         Given a signed in user
         When the user creates a meetup called 'MyMeetup'
         And the user cancels the meetup called 'MyMeetup'

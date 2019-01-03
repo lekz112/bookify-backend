@@ -21,6 +21,8 @@ declare module 'cucumber' {
         client: ApolloClient<{}>;        
         connection: Connection;  
         response: any;      
+        error: any;
+        meetup: Meetup;
     }
 }
 

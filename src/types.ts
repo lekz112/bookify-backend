@@ -1,4 +1,4 @@
-// Generated in 2019-01-01T18:29:48+05:00
+// Generated in 2019-01-03T13:49:21+05:00
 
 export interface CreateMeetupInput {
   name: string;
@@ -43,6 +43,8 @@ export type DateTime = any;
 export interface Query {
   meetups: Meetup[];
 
+  meetup: Meetup;
+
   user: User;
 }
 
@@ -75,6 +77,8 @@ export interface Mutation {
 
   cancelMeetup: Meetup;
 
+  applyForMeetup: MeetupAttendance;
+
   signUp?: SignUpPayload | null;
 
   signIn: SignInPayload;
@@ -96,11 +100,17 @@ export interface SignInPayload {
 // Arguments
 // ====================================================
 
+export interface MeetupQueryArgs {
+  id: string;
+}
 export interface CreateMeetupMutationArgs {
   input: CreateMeetupInput;
 }
 export interface CancelMeetupMutationArgs {
   input: CancelMeetupInput;
+}
+export interface ApplyForMeetupMutationArgs {
+  meetupId: string;
 }
 export interface SignUpMutationArgs {
   input: SignUpInput;
@@ -168,6 +178,8 @@ export namespace QueryResolvers {
   export interface Resolvers<Context = BookifyContext, TypeParent = {}> {
     meetups?: MeetupsResolver<Meetup[], TypeParent, Context>;
 
+    meetup?: MeetupResolver<Meetup, TypeParent, Context>;
+
     user?: UserResolver<User, TypeParent, Context>;
   }
 
@@ -176,6 +188,15 @@ export namespace QueryResolvers {
     Parent = {},
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
+  export type MeetupResolver<
+    R = Meetup,
+    Parent = {},
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context, MeetupArgs>;
+  export interface MeetupArgs {
+    id: string;
+  }
+
   export type UserResolver<
     R = User,
     Parent = {},
@@ -270,6 +291,12 @@ export namespace MutationResolvers {
 
     cancelMeetup?: CancelMeetupResolver<Meetup, TypeParent, Context>;
 
+    applyForMeetup?: ApplyForMeetupResolver<
+      MeetupAttendance,
+      TypeParent,
+      Context
+    >;
+
     signUp?: SignUpResolver<SignUpPayload | null, TypeParent, Context>;
 
     signIn?: SignInResolver<SignInPayload, TypeParent, Context>;
@@ -291,6 +318,15 @@ export namespace MutationResolvers {
   > = Resolver<R, Parent, Context, CancelMeetupArgs>;
   export interface CancelMeetupArgs {
     input: CancelMeetupInput;
+  }
+
+  export type ApplyForMeetupResolver<
+    R = MeetupAttendance,
+    Parent = {},
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context, ApplyForMeetupArgs>;
+  export interface ApplyForMeetupArgs {
+    meetupId: string;
   }
 
   export type SignUpResolver<
