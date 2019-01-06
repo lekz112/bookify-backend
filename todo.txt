@@ -1,10 +1,16 @@
+ormconfig.js/ts - user process.env.DB_USERNAMe inside, declare all configurations
+
+
+
 Add logging
 Trace function calls
     Dataloader
 Deploy
 
 +applyForMeetup
-cancelAttendance
++cancelAttendance
+    If I cancel my attendance, I should be able to change my mind back
+    index on non deleted
 
 integration tests
 
@@ -18,3 +24,14 @@ Move remaining functionality from resolvers into service
 Better way to map objects DB -> Domain -> API
 
 Are the meetup and meetupAttendance part of the same bounded context?
+
+
+Questions:
+Cucumber tests best practices: 
+    ids in the tests vs implicits
+    Asserting Given and When
+    Checking error messages
+    Test env?
+Local usage of Docker
+Datadog APM for carpool app
+Typeorm entities - typesafe

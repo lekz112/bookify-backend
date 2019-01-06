@@ -5,7 +5,7 @@ import { UserService } from "./users";
 import { BookifyContext } from "./index";
 import { Context } from "koa";
 import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
-import { MeetupService } from "./meetup/MeetupService";
+import { MeetupService } from "./meetup/meetupService";
 
 const extractBearerToken = (header: string): string | undefined => {
     if (!header) return;
