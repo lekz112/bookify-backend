@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:      
-      - image: circleci/node:10
+      - image: circleci/node:11.5
       - image: circleci/postgres:9.6-alpine-postgis-ram
         environment:
           POSTGRES_USER: postgres
@@ -26,6 +26,6 @@ jobs:
           paths:
             - ./node_modules
 
-      # run tests!
-      - run: yarn build
+      # run tests!      
+      - run: yarn build     
       - run: yarn features
