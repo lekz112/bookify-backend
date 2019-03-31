@@ -7,7 +7,7 @@ jobs:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: bookify
+          POSTGRES_DB: bookify_test
     
     working_directory: ~/repo
 
@@ -27,4 +27,4 @@ jobs:
             - ./node_modules
 
       # run tests!
-      - run: yarn test
+      - run: yarn features

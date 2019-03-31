@@ -16,6 +16,8 @@ module.exports = [{
     name: "test",
     type: "postgres",
     url: "postgres://localhost:5432/bookify_test", // TODO: use env variable?
+    username: "postgres",
+    password: "postgres",
     dropSchema: true,
     migrationsRun: true,
     synchronize: false,
