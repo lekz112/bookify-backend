@@ -62,9 +62,9 @@ workflows:
       #   requires:
       #     - checkout
       - aws-ecr/build_and_push_image:
-          account-url: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+          account-url: AWS_ECR_ACCOUNT_URL
           repo: "bookify"
-          region: ${AWS_DEFAULT_REGION}
+          region: AWS_DEFAULT_REGION
           tag: ${CIRCLE_SHA1}
           requires:
             - checkout
