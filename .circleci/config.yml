@@ -1,6 +1,15 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@4.0.0
+
+###
+# Specifies required docker environments to
+# successfully run the jobs. For this purpose,
+# each workflow uses its own executor:
+# - CI: For running the tests, a node environment is required
+executors:
+  ci-executor:
+    working_directory: ~/code
     docker:      
       - image: circleci/node:11.5
       - image: circleci/postgres:9.6-alpine-postgis-ram
@@ -8,24 +17,60 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: bookify_test
-    
-    working_directory: ~/repo
 
+###
+# Commnands are reusable job parts
+# the parameters provide a way to customize
+# behavior
+commands:
+  
+
+###
+# Jobs a specific steps inside a workflow
+# They should always make use of the commands
+# so that their definition stays readable
+jobs:
+  checkout:
+    executor: ci-executor
     steps:
       - checkout
-
       - restore_cache:
           keys:
             - v1-yarn-cache-{{ checksum "yarn.lock" }}
             - v1-yarn-cache-
-
       - run: yarn install --frozen-lockfile
-      
       - save_cache:
           key: v1-yarn-cache-{{ checksum "yarn.lock" }}
           paths:
             - ./node_modules
-
-      # run tests!      
-      - run: yarn build     
+  
+  features:
+    executor: ci-executor
+    steps:
+    # todo wait for postrgress 
       - run: yarn features
+
+  build_and_push_image:
+    executor: ci-executor
+    steps:
+      - aws-ecr/build_and_push_image:
+            account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+            repo: "bookify"
+            region: ${AWS_DEFAULT_REGION}
+            tag: "${CIRCLE_SHA1}"
+
+
+workflows:
+  bookify_cd:
+    jobs:
+      - checkout:
+          filters:
+            branches:
+              only:
+                - master
+      # - features:
+      #   requires:
+      #     - checkout
+      - build_and_push_image:
+          requires:
+            - checkout
