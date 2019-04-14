@@ -19,7 +19,7 @@ executors:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: bookify_test
+          POSTGRES_DB: bookify
 
 ###
 # Commnands are reusable job parts
@@ -34,8 +34,7 @@ commands:
 
   source_environment:
     description: Source environment variables from dotenv
-    steps:
-      - run: ls
+    steps:      
       - run: awk '{ printf "export %s;\n", $0 }' dev.env >> $BASH_ENV
   
   wait_for_db:
