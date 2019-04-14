@@ -25,6 +25,7 @@ commands:
   source_environment:
     description: Source environment variables from dotenv
     steps:
+      - run: ls
       - run: awk '{ printf "export %s;\n", $0 }' dev.env >> $BASH_ENV
   
   wait_for_db:
@@ -56,13 +57,23 @@ jobs:
   
   features:
     executor: ci-executor
-    steps:
+    steps:      
       # todo wait for postrgress? 
       - source_environment
       - wait_for_db
       - run: yarn features
 
 workflows:
+  bookify_ci:
+    jobs:
+      - checkout:
+          filters:
+            branches:
+              ignore:
+                - master
+      - features:
+          requires:
+            - checkout
   bookify_cd:
     jobs:
       - checkout:
