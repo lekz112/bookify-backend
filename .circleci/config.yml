@@ -8,8 +8,7 @@ orbs:
 # each workflow uses its own executor:
 # - CI: For running the tests, a node environment is required
 executors:
-  ci-executor:
-    working_directory: ~/code
+  ci-executor:    
     docker:      
       - image: circleci/node:11.5
       - image: circleci/postgres:9.6-alpine-postgis-ram
