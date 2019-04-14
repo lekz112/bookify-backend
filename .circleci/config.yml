@@ -71,6 +71,7 @@ jobs:
   features:
     executor: ci-executor
     steps:            
+      - attach_to_code_workspace
       - source_environment
       - wait_for_db
       - run: yarn features
