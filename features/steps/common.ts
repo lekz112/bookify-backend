@@ -1,5 +1,5 @@
 import { ApolloClient } from 'apollo-client';
-import { After, Given } from 'cucumber';
+import { After, Given, Before } from 'cucumber';
 import { default as Koa } from 'koa';
 import { Server } from "net";
 import { Connection, createConnection } from "typeorm";
@@ -15,7 +15,7 @@ declare module 'cucumber' {
     interface World {
         userId: string;
         server: Server;
-        client: ApolloClient<{}>;        
+        client: ReturnType<typeof testApolloClient>;        
         connection: Connection;  
         response: any;      
         error: any;
@@ -26,22 +26,31 @@ declare module 'cucumber' {
 Given(/^a signed in user/, async function() {
     this.userId = uuid.v1();
     const token = signJWT(this.userId);
-    const port = 8888;    
-    // Create test client
-    this.client = testApolloClient(token, port);
-
-    // Initialize DB connection    
-    this.connection = await createConnection('test');    
+    
+    this.client.updateContext('accessToken', token);
+    
     // Seed data
-    await this.connection.createQueryBuilder().insert().into('users').values({ id: this.userId, email: "email", password: "password" }).execute();
-    // Build context
+    // TODO: use real api instead
+    await this.connection.createQueryBuilder().insert().into('users').values({ id: this.userId, email: "email", password: "password" }).execute();            
+});
+
+Before(async function() {
+    // Reset DB
+    this.connection = await createConnection();    
+    await this.connection.dropDatabase();
+    await this.connection.runMigrations();
+
     const contextFunction = createContextFunction(this.connection);
     
-    // Start serever
+    // Start server
+    const port = 8888;
     const apolloServer = createApolloServer(contextFunction);
     const koaServer = new Koa();
     apolloServer.applyMiddleware({ app: koaServer })
     this.server = await koaServer.listen(port);    
+
+    // Create test client
+    this.client = testApolloClient(port);
 });
 
 After(async function() {

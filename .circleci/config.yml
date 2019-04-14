@@ -23,6 +23,17 @@ executors:
 # the parameters provide a way to customize
 # behavior
 commands:
+  source_environment:
+    description: Source environment variables from dotenv
+    steps:
+      - run: awk '{ printf "export %s;\n", $0 }' dev.env >> $BASH_ENV
+  
+  wait_for_db:
+    description: Waits until Postgres can be accessed on port 5432    
+    steps:
+      - run:
+          name: Wait for postgres
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
   
 
 ###
@@ -47,7 +58,9 @@ jobs:
   features:
     executor: ci-executor
     steps:
-    # todo wait for postrgress 
+      # todo wait for postrgress? 
+      - source_environment
+      - wait_for_db
       - run: yarn features
 
 workflows:
@@ -58,13 +71,13 @@ workflows:
             branches:
               only:
                 - master
-      # - features:
-      #   requires:
-      #     - checkout
+      - features:
+          requires:
+            - checkout
       - aws-ecr/build_and_push_image:
           account-url: AWS_ECR_ACCOUNT_URL
           repo: "bookify"
           region: AWS_DEFAULT_REGION
           tag: ${CIRCLE_SHA1}
           requires:
-            - checkout
+            - features

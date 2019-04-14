@@ -1,5 +1,5 @@
 typeorm migration:create -n PostRefactoring
-
+postgres -D /usr/local/var/postgres/
 
 table Meetups
 

@@ -12,7 +12,7 @@
     "features": "cucumber-js features/ -f node_modules/cucumber-pretty --require-module ts-node/register --require 'features/steps/**/*.ts'",
     "db:start": "pg_ctl -D /usr/local/var/postgres start",
     "db:drop": "yarn ts-node ./node_modules/.bin/typeorm schema:drop",
-    "db:migrate": "yarn ts-node ./node_modules/.bin/typeorm migration:run",
+    "db:migrate": "ts-node ./node_modules/.bin/typeorm migration:run",
     "db:rollback": "yarn ts-node ./node_modules/.bin/typeorm migration:revert"
   },
   "devDependencies": {

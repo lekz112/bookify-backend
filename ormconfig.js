@@ -1,31 +1,12 @@
-module.exports = [{
-    name: "default",
+const isProduction = process.env.NODE_ENV === 'production';
+
+module.exports = {
     type: 'postgres',
     url: process.env.DB_URL,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
     synchronize: false,
     logging: false, // ?
-    migrations: [
-        "src/migrations/**/*.ts"
-    ],
+    migrations: isProduction ? [ 'dist/migrations/**/*.js'] : [ "src/migrations/**/*.ts"],
     cli: {
         migrationsDir: "src/migrations"
     }
-}, {
-    name: "test",
-    type: "postgres",
-    database: "bookify_test",
-    username: "postgres",
-    password: "postgres",
-    dropSchema: true,
-    migrationsRun: true,
-    synchronize: false,
-    logging: false,
-    migrations: [
-        "src/migrations/**/*.ts"
-    ],
-    cli: {
-        migrationsDir: "src/migrations"
-    }
-}];
+};
