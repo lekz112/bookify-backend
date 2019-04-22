@@ -1,4 +1,4 @@
-import './dotenv';
+// import './dotenv';
 import './datadog';
 import { default as Koa } from 'koa';
 import { createConnection, getConnectionOptions } from 'typeorm';

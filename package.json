@@ -6,7 +6,7 @@
     "dev": "yarn nodemon",
     "build": "tsc --project tsconfig.json",
     "types:generate": "yarn gql-gen && yarn lint --fix",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "lint": "tslint --project ./tsconfig.json",
     "spec": "tsc && yarn jest",
     "migrate-and-start": "yarn typeorm migration:run && yarn start",
