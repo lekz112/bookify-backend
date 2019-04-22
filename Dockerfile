@@ -30,7 +30,9 @@ WORKDIR /opt/app
 # Copy files from the previous phase
 COPY --from=builder /opt/app/package.json .
 COPY --from=builder /opt/app/yarn.lock .
+# Do we still need it?
 COPY --from=builder /opt/app/schema.graphql .
+COPY --from=builder /opt/app/ormconfig.js .
 COPY --from=builder /opt/app/dist ./dist
 
 # Install dependencies for building bcrypt
