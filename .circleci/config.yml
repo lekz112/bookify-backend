@@ -109,4 +109,5 @@ workflows:
             - aws-ecr/build_and_push_image
           family: 'bookify'
           cluster-name: 'bookify'
+          aws-region: AWS_DEFAULT_REGION
           container-image-name-updates: 'container=bookify,tag=${CIRCLE_SHA1}'
