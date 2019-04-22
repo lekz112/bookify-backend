@@ -41,4 +41,4 @@ RUN set -ex; \
   yarn cache clean
 
 EXPOSE 8080
-CMD ["yarn", "db:migrate", "start"]
+CMD ["yarn", "migrate-and-start"]
