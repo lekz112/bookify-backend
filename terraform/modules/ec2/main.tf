@@ -17,7 +17,7 @@ variable "image" {}
 resource "aws_autoscaling_group" "bookify" {
   launch_configuration = "${aws_launch_configuration.bookify.id}"
   min_size             = 1
-  desired_capacity     = 1
+  desired_capacity     = 2
   max_size             = 3
 
   vpc_zone_identifier = ["${var.subnet_ids}"]
@@ -42,7 +42,6 @@ resource "aws_launch_configuration" "bookify" {
   user_data = <<EOF
 #!/usr/bin/env bash
 echo ECS_CLUSTER=bookify >> /etc/ecs/ecs.config
-DD_API_KEY=cfd873c458552158965b52b3d6f2e598 bash -c "$(curl -L https://raw.githubusercontent.com/DataDog/datadog-agent/master/cmd/agent/install_script.sh)"
   EOF
 
   lifecycle {
