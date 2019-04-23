@@ -4,12 +4,12 @@
       "image": "${image}",
       "portMappings": [
         {
-          "containerPort": 80,
-          "hostPort": 80
+          "containerPort": ${app_port},
+          "hostPort": 0,
+          "protocol": "tcp"
         }
       ],
-      "memory": 128,
-      "networkMode": null,      
+      "memory": 300,            
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {

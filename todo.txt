@@ -1,6 +1,7 @@
 ormconfig.js/ts - user process.env.DB_USERNAMe inside, declare all configurations
 
 
+SignUp should be idempotent
 
 Add logging
 Trace function calls

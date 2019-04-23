@@ -1,3 +1,26 @@
+variable "aws_region" {
+  description = "Region for the VPC"
+  default = "eu-central-1"
+}
+
+
+variable "ami" {
+  default = "ami-02c40c6d994943b85"
+}
+
+variable "instance_type" {
+  default = "t2.micro"
+}
+
+variable "availability_zones" {
+  default = ["eu-central-1a", "eu-central-1b", "eu-central-1c"]
+}
+
+variable "app_port" {
+  description = "Port exposed by the docker image to redirect traffic to"
+  default     = 8080
+}
+
 provider "aws" {
   region = "${var.aws_region}"
 }
@@ -32,8 +55,21 @@ provider "aws" {
 
 
 
-module "ecr" {
-  source = "./modules/ecr"
+resource "aws_ecr_repository" "bookify" {
+  name = "bookify"
+}
+
+module "ec2" {
+  source = "./modules/ec2"
+  ami = "${var.ami}"
+  instance_type = "${var.instance_type}"
+  subnet_ids = "${module.network.public_subnet_ids}"  
+  lb_sg_id = "${module.network.public_security_group_id}"
+  instance_sg_id ="${module.network.instance_security_group_id}"
+  db_url = "postgres://postgres:postgres@${module.rds.db-address}"
+  # TODO: what should be the default image to deploy?
+  image = "${aws_ecr_repository.bookify.repository_url}:ca31070ebed4619a594bd48f0bc820c4d0563d84"
+  vpc_id = "${module.network.vpc_id}"
 }
 
 module "rds" {
@@ -45,8 +81,4 @@ module "rds" {
 module "network" {
   source = "./modules/network"  
   availability_zones = "${var.availability_zones}"
-}
-
-output "rds-endpoint" {
-  value = "${module.rds.db-address}"
 }

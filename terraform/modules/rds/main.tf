@@ -17,6 +17,7 @@ resource "aws_db_instance" "bookify" {
   password             = "postgres"  
   vpc_security_group_ids = ["${var.vpc_security_group_id}"]
   db_subnet_group_name = "${aws_db_subnet_group.bookify.name}"  
+  skip_final_snapshot = true
   multi_az = "false"
 }
 

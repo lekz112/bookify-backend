@@ -8,44 +8,27 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_subnet" "public" {
+  count = "${length(var.availability_zones)}"
   vpc_id = "${aws_vpc.main.id}"
-  cidr_block = "${var.public_subnet_cidr}"
-  availability_zone = "${var.availability_zones[0]}"  
+  cidr_block = "${cidrsubnet(var.vpc_cidr, 8, count.index)}"
+  availability_zone = "${element(var.availability_zones, count.index)}"  
 
   tags {
-    Name = "Web Public Subnet"
+    Name = "public subnet"
   }
 }
 
 # Define the private subnet
-resource "aws_subnet" "private_0" {  
+resource "aws_subnet" "private" {  
+  count = "${length(var.availability_zones)}"
   vpc_id = "${aws_vpc.main.id}"
-  cidr_block = "${var.private_subnet_cidr_0}"
-  availability_zone = "${var.availability_zones[0]}"
+  cidr_block = "${cidrsubnet(var.vpc_cidr, 8, count.index + length(var.availability_zones))}"
+  availability_zone = "${element(var.availability_zones, count.index)}"
 
   tags {
-    Name = "Database Private Subnet 0"
+    Name = "private subnet"
   }
 }
-
-resource "aws_subnet" "private_1" {  
-  vpc_id = "${aws_vpc.main.id}"
-  cidr_block = "${var.private_subnet_cidr_1}"
-  availability_zone = "${var.availability_zones[1]}"  
-
-  tags {
-    Name = "Database Private Subnet 1"
-  }
-}
-
-# resource "aws_default_subnet" "default_${var.availability_zones[0]}" {
-#   availability_zone = "${var.availability_zones[0]}"
-
-#   tags = {
-#     Name = "Default subnet for ${var.availability_zones[0]}"
-#   }
-# }
-
 
 
 resource "aws_internet_gateway" "gw" {
@@ -56,7 +39,7 @@ resource "aws_internet_gateway" "gw" {
   }
 }
 
-resource "aws_route_table" "web-public-rt" {
+resource "aws_route_table" "public-rt" {
   vpc_id = "${aws_vpc.main.id}"
 
   route {
@@ -65,16 +48,17 @@ resource "aws_route_table" "web-public-rt" {
   }
 
   tags {
-    Name = "Public Subnet RT"
+    Name = "public RT"
   }
 }
 
-resource "aws_route_table_association" "web-public-rt" {
-  subnet_id = "${aws_subnet.public.id}"
-  route_table_id = "${aws_route_table.web-public-rt.id}"
+resource "aws_route_table_association" "public-rt" {
+  count = "${length(var.availability_zones)}"
+  subnet_id = "${element(aws_subnet.public.*.id, count.index)}"
+  route_table_id = "${aws_route_table.public-rt.id}"
 }
 
-resource "aws_security_group" "public"{
+resource "aws_security_group" "public" {
   name = "sg_public"
   description = "Allow HTTP and SSH traffic"
 
@@ -86,19 +70,37 @@ resource "aws_security_group" "public"{
   }
 
   ingress {
-    from_port = 8080
-    to_port = 8080
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
     from_port = 443
     to_port = 443
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  vpc_id = "${aws_vpc.main.id}"
+}
+
+resource "aws_security_group" "instance" {
+  name = "sg_instance"
+  description = "Allows traffic from load balancer to instances"
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 32768
+    to_port     = 65535
+    description = "Access from ALB"
+
+    security_groups = [
+      "${aws_security_group.public.id}",
+    ]
+  }
+
   ingress {
     from_port = 22
     to_port = 22
@@ -106,12 +108,16 @@ resource "aws_security_group" "public"{
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  vpc_id = "${aws_vpc.main.id}"
-
-  tags {
-    Name = "Public SG"
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
+
+  vpc_id = "${aws_vpc.main.id}"
 }
+
 
 resource "aws_security_group" "private" {
   name = "sg_private"
@@ -122,7 +128,7 @@ resource "aws_security_group" "private" {
     from_port = 5432
     to_port = 5432
     protocol = "tcp"
-    cidr_blocks = ["${var.public_subnet_cidr}"]
+    cidr_blocks = ["${aws_subnet.public.*.cidr_block}"]
   }
 
   # Ping
@@ -130,7 +136,7 @@ resource "aws_security_group" "private" {
     from_port = -1
     to_port = -1
     protocol = "icmp"
-    cidr_blocks = ["${var.public_subnet_cidr}"]
+    cidr_blocks = ["${aws_subnet.public.*.cidr_block}"]
   }
 
   # SSH
@@ -138,7 +144,14 @@ resource "aws_security_group" "private" {
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = ["${var.public_subnet_cidr}"]
+    cidr_blocks = ["${aws_subnet.public.*.cidr_block}"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["${aws_subnet.public.*.cidr_block}"]
   }
 
   vpc_id = "${aws_vpc.main.id}"
@@ -153,5 +166,21 @@ output "private_security_group_id" {
 }
 
 output "private_subnet_ids" {
-  value = ["${aws_subnet.private_0.id}", "${aws_subnet.private_1.id}"]
+  value = ["${aws_subnet.private.*.id}"]
+}
+
+output "public_subnet_ids" {
+  value = "${aws_subnet.public.*.id}"
+}
+
+output "public_security_group_id" {
+  value = "${aws_security_group.public.id}"
+}
+
+output "instance_security_group_id" {
+  value = "${aws_security_group.instance.id}"
+}
+
+output "vpc_id" {
+  value = "${aws_vpc.main.id}"
 }
