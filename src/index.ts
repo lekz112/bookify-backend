@@ -1,4 +1,3 @@
-// import './dotenv';
 import './datadog';
 import { default as Koa } from 'koa';
 import { default as KoaRouter } from 'koa-router';
