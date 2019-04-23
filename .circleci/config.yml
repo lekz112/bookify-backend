@@ -103,7 +103,7 @@ workflows:
           region: AWS_DEFAULT_REGION
           tag: ${CIRCLE_SHA1}
           requires:
-            - features
+            - features      
       - aws-ecs/deploy-service-update:
           requires:
             - aws-ecr/build_and_push_image
