@@ -6,9 +6,13 @@ export class MeetupService {
     
     constructor(private meetupRepository: MeetupRepository, private meetupAttendanceRepository: MeetupAttendanceRepository) { }
 
-    async createMeetup(userId: string, name: string): Promise<Meetup> {
-        // this.meetupRepository.create()
-        return null;
+    async createMeetup(userId: string, name: string): Promise<any> {
+        console.log("create____")
+        let meetup = await this.meetupRepository.create(userId, name);
+        let attendee = await this.meetupAttendanceRepository.create(userId, meetup.id, MeetupRole.Owner);                
+        let result = { ...meetup,  attendess: [attendee] }
+        console.log("Service: " + result)
+        return result
     }
 
     async applyForMeetup(userId: string, meetupId: string): Promise<MeetupAttendance> {

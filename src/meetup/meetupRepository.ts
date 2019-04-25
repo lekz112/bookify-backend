@@ -1,4 +1,4 @@
-export type Meetup = {
+export interface Meetup {
     id: string,
     name: string
     status: MeetupStatus

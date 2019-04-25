@@ -27,8 +27,7 @@ export class PostgressMetupRepository implements MeetupRepository {
     }
 
     async create(ownerId: string, name: string): Promise<Meetup> {
-        return await this.connection.transaction(async (entityManager) => {
-            const result = await entityManager.createQueryBuilder()
+        const result = await this.connection.createQueryBuilder()
                 .insert()
                 .into(this.meetupsTable)
                 .values({ name, status: MeetupStatus.Scheduled })
@@ -36,16 +35,7 @@ export class PostgressMetupRepository implements MeetupRepository {
                 .execute();
             const meetup = result.raw[0] as Meetup;
 
-            const attendanceResult = await entityManager.createQueryBuilder()
-                .insert()
-                .into(this.meetupAttendancesTable)
-                .values({ user_id: ownerId, meetup_id: meetup.id, role: MeetupRole.Owner })
-                .returning('*')
-                .execute();
-            const meetupAttendance = attendanceResult.raw[0];
-
-            return meetup
-        });
+        return result.raw[0];
     }
 
     async cancel(id: string): Promise<Meetup> {
