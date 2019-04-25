@@ -19,6 +19,8 @@ resource "aws_alb_target_group" "bookify" {
     healthy_threshold   = "3" # number of checks to consider target healthy
     unhealthy_threshold = "3"
   }
+
+  depends_on = ["aws_alb.bookify"]
 }
 
 # Redirect all traffic from the ALB to the target group
