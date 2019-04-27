@@ -7,7 +7,6 @@ import { createContextFunction } from "./createContextFunction";
 import { MeetupAttendanceRepository, MeetupRepository } from './meetup';
 import { UserService } from './users';
 import { MeetupService } from './meetup/meetupService';
-import pg from 'pg';
 
 export type BookifyContext = {
     meetupRepository: MeetupRepository
@@ -32,10 +31,6 @@ const main = async () => {
     koaServer.use(router.routes());
     koaServer.use(router.allowedMethods());
     // Initialize DB connection    
-
-    let client = new pg.Client();
-    client.query("test")
-    
     
     const connection = await createConnection();    
     const contextFunction = createContextFunction(connection);
