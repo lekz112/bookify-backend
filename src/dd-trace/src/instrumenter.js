@@ -130,12 +130,22 @@ class Instrumenter {
     this._plugins
       .forEach((meta, plugin) => {
         try {
-          [].concat(plugin)
-            .filter(instrumentation => moduleName === filename(instrumentation))
-            .filter(instrumentation => matchVersion(moduleVersion, instrumentation.versions))
+          [].concat(plugin)                      
+            .filter(instrumentation => {              
+              const ret = moduleName === filename(instrumentation)
+              console.log("filename: " + instrumentation.name + " filter: " + ret)
+              return ret
+            })
+            //.forEach(instrumentation => 
+            .filter(instrumentation => {             
+              const ret = matchVersion(moduleVersion, instrumentation.versions)
+              console.log("version: " + instrumentation.name + " filter " + ret);
+              return ret
+            })
             .forEach(instrumentation => {
               const config = this._plugins.get(plugin).config
 
+              console.log("enabled? " + instrumentation.name + " config: " + config.enabled)
               if (config.enabled !== false) {
                 this._patch(instrumentation, moduleExports, config)
               }
@@ -168,6 +178,7 @@ class Instrumenter {
   }
 
   _validate (plugin, moduleBaseDir, moduleVersion) {
+    console.log("_validate:" + JSON.stringify(plugin))
     const meta = this._plugins.get(plugin)
     const instrumentations = [].concat(plugin)
 
@@ -195,6 +206,7 @@ class Instrumenter {
   }
 
   _patch (instrumentation, moduleExports, config) {
+    console.log("_patch: " + instrumentation.name);
     let instrumented = this._instrumented.get(instrumentation)
 
     if (!instrumented) {
@@ -222,13 +234,16 @@ class Instrumenter {
   }
 
   _load (plugin, meta) {
+    console.log("_load: " + JSON.stringify(plugin) + "enabled: " + this._enabled);
     if (this._enabled) {
       const instrumentations = [].concat(plugin)
 
       try {
         instrumentations
           .forEach(instrumentation => {
+            console.log("getModules:" + getModules(instrumentation));
             getModules(instrumentation).forEach(nodule => {
+              console.log("_patch: " + JSON.stringify(nodule))
               this._patch(instrumentation, nodule, meta.config)
             })
           })
@@ -254,7 +269,7 @@ function normalizeAnalyticsConfig (config) {
 
 function getModules (instrumentation) {
   const modules = []
-  const ids = Object.keys(require.cache)
+  const ids = Object.keys(require.cache)  
 
   let pkg
 

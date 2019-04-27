@@ -13,6 +13,9 @@ if (process.env.NODE_ENV == 'production') {
     });                
 } else {
     tracer.init();
+    tracer.use("pg");
+    tracer.use("graphql");
+    tracer.use("koa");
 }
 
 export default tracer;
