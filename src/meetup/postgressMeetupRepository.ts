@@ -1,53 +1,54 @@
-import { Connection } from "typeorm";
-import { Meetup, MeetupRepository, MeetupStatus } from "./meetupRepository";
-import { MeetupRole } from "./meetupAttendanceRepository";
+import { Connection, Not } from "typeorm";
+import { MeetupRepository } from "./meetupRepository";
+import { Meetup, MeetupStatus } from "./meetup";
+import { MeetupEntity } from "./meetupEntity";
 
 export class PostgressMetupRepository implements MeetupRepository {
-
-    private meetupsTable: string = "meetups"
-    private meetupAttendancesTable: string = "meetup_attendances";
 
     constructor(private connection: Connection) {
     }
 
     findAll(): Promise<Meetup[]> {
-        return this.connection.createQueryBuilder()
-            .select()
-            .from(this.meetupsTable, 'meetups')
-            .where('meetups.status != :status', { status: MeetupStatus.Canceled })
-            .getRawMany()
+        return this.getORMRepository()
+            .find({status: Not(MeetupStatus.Canceled)})                        
+            .then(entities => entities.map(PostgressMetupRepository.mapToDomain))
     }
 
-    findById(id: string): Promise<Meetup> {
-        return this.connection.createQueryBuilder()
-            .select()
-            .from(this.meetupsTable, 'meetups')
-            .where('meetups.id = :id', { id })
-            .getRawOne()
+    findById(id: string): Promise<Meetup | undefined> {
+        return this.getORMRepository()
+            .findOne(id)
+            .then(PostgressMetupRepository.mapToDomain)
     }
 
-    async create(ownerId: string, name: string): Promise<Meetup> {
-        const result = await this.connection.createQueryBuilder()
-                .insert()
-                .into(this.meetupsTable)
-                .values({ name, status: MeetupStatus.Scheduled })
-                .returning('*')
-                .execute();
-            const meetup = result.raw[0] as Meetup;
+    async create(name: string): Promise<Meetup> {        
+        let entity = this.getORMRepository()
+            .create({
+                name,
+                status: MeetupStatus.Scheduled
+            })
 
-        return result.raw[0];
+        return this.getORMRepository()
+            .save(entity)
+            .then(PostgressMetupRepository.mapToDomain)    
     }
 
-    async cancel(id: string): Promise<Meetup> {
-        const result = await this.connection.createQueryBuilder()
-            .update(this.meetupsTable)
-            .set({ status: MeetupStatus.Canceled })
-            .where('id = :id', { id })
-            .returning('*')
-            .execute()
-
-        return result.raw[0];
-
+    async setStatus(id: string, status: string): Promise<Meetup> {        
+        const meetup = await this.getORMRepository()
+            .findOneOrFail(id);
+            
+        return this.getORMRepository()
+            .save({ ...meetup, status})
+            .then(PostgressMetupRepository.mapToDomain);
     }
 
+    private static mapToDomain(entity: MeetupEntity): Meetup {        
+        return {
+            ...entity,            
+            status: entity.status as MeetupStatus
+        }
+    }    
+
+    private getORMRepository() {
+        return this.connection.getRepository(MeetupEntity)
+    }
 }

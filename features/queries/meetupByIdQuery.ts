@@ -6,7 +6,7 @@ query MeetupById($id: String!) {
     id
     name
     status
-    created_at
+    createdAt
     attendees {
       role
       status

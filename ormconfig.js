@@ -6,6 +6,7 @@ module.exports = {
     synchronize: false,
     logging: false, // ?
     migrations: isProduction ? [ 'dist/src/migrations/**/*.js'] : [ "src/migrations/**/*.ts"],
+    entities: isProduction ? ['dist/**/*Entity.js'] : ['src/**/*Entity.ts'],
     cli: {
         migrationsDir: "src/migrations"
     }

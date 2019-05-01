@@ -6,7 +6,7 @@ query {
     id
     name
     status
-    created_at
+    createdAt
     attendees {
       role
       user {

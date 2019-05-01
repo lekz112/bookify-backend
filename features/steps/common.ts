@@ -1,12 +1,11 @@
-import { ApolloClient } from 'apollo-client';
-import { After, Given, Before } from 'cucumber';
+import { After, Before, Given } from 'cucumber';
 import { default as Koa } from 'koa';
+import { Meetup } from 'meetup/meetup';
 import { Server } from "net";
 import { Connection, createConnection } from "typeorm";
 import uuid from 'uuid';
 import { createApolloServer } from "../../src/createApolloServer";
 import { createContextFunction } from "../../src/createContextFunction";
-import { Meetup } from '../../src/types';
 import { signJWT } from '../../src/users/JWT';
 import { testApolloClient } from './testApolloClient';
 

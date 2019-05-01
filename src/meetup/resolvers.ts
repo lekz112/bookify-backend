@@ -31,11 +31,11 @@ export const meetupResolvers: MeetupResolvers = {
         }
     },
     Mutation: {
-        createMeetup: (_parent, { input }, { meetupRepository, userId }): Promise<any> => {
-            return meetupRepository.create(userId, input.name);            
+        createMeetup: (_parent, { input }, { meetupService, userId }): Promise<any> => {
+            return meetupService.createMeetup(userId, input.name);            
         },
-        cancelMeetup: (_parent, { input }, { meetupRepository }): Promise<any> => {
-            return meetupRepository.cancel(input.id);            
+        cancelMeetup: (_parent, { input }, { meetupService, userId }): Promise<any> => {
+            return meetupService.cancelMeetup(userId, input.id)
         },
         applyForMeetup: (_parent, { meetupId }, { userId, meetupService }): Promise<any> => {            
             return meetupService.applyForMeetup(userId, meetupId);            
@@ -46,7 +46,7 @@ export const meetupResolvers: MeetupResolvers = {
     },
     MeetupAttendance: {
         user: (_parent, _args, { userService}): Promise<any> => {
-            // Problem: we now that our parent resolver returns domain type that contains additional info
+            // Problem: we know that our parent resolver returns domain type that contains additional info
             // According to types though, we cannot know it
             // Returning the actual graphql type is impossible, since we would need to eagerly resolve stuff
             // Or well, introduce some kind of "View" objects that contain lazy functions

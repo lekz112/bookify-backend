@@ -2,15 +2,13 @@ import { expect } from 'chai';
 import { Then, When, After, Given } from "cucumber";
 import { CreateMeetupMutation } from '../queries/createMeetupMutation';
 import { CancelMeetupMutation } from '../queries/cancelMeetupMutation';
-import { MeetupRole } from '../../src/meetup/meetupAttendanceRepository';
 import { MeetupsQuery } from '../queries/meetupsQuery';
-import { MeetupStatus } from '../../src/meetup/meetupRepository';
 import { Meetup } from '../../src/types';
+import { MeetupStatus } from '../../src/meetup/meetup';
 
 When(/^the user creates a meetup called '(.*)'$/, async function (name) {
     const response = await this.client.mutate({ mutation: CreateMeetupMutation, variables: { name: name } });
-    this.response = (response.data as any).createMeetup;
-    console.log(this.response);
+    this.response = (response.data as any).createMeetup;    
 });
 
 Then(/^the meetup called '(.*)' should be created$/, function (name) {

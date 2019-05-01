@@ -1,18 +1,8 @@
-export interface Meetup {
-    id: string,
-    name: string
-    status: MeetupStatus
-    created_at: Date    
-}
-
-export enum MeetupStatus {
-    Scheduled = "SCHEDULED",
-    Canceled = "CANCELED"
-}
+import { Meetup } from "./meetup";
 
 export interface MeetupRepository {
-    findById(id: string): Promise<Meetup>;
+    findById(id: string): Promise<Meetup | undefined>;
     findAll(): Promise<Meetup[]>        
-    create(ownerId: string, name: string): Promise<Meetup>
-    cancel(id: string): Promise<Meetup>
+    create(name: string): Promise<Meetup>
+    setStatus(id: string, status: string): Promise<Meetup>
 }

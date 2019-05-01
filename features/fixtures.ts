@@ -2,8 +2,8 @@ import { Connection } from "typeorm";
 import { PostgressMetupRepository, PostgressMeetupAttendanceRepository } from "../src/meetup";
 import { PostgressUsersRepository } from "../src/users/postgressUsersRepository";
 import { company, internet } from 'faker'
-import { Meetup } from "../src/types";
 import { MeetupAttendanceStatus } from "../src/meetup/meetupAttendanceRepository";
+import { Meetup } from "meetup/meetup";
 
 export const createMeetup = async (connection: Connection): Promise<Meetup> => {
     const userRepo = new PostgressUsersRepository(connection);
@@ -11,7 +11,7 @@ export const createMeetup = async (connection: Connection): Promise<Meetup> => {
     const meetupAttendanceRepo = new PostgressMeetupAttendanceRepository(connection);
 
     const owner = await userRepo.create(internet.email(), internet.password());
-    const meetup = await meetupRepo.create(owner.id, company.companyName());
+    const meetup = await meetupRepo.create(company.companyName());
     const attendees = await meetupAttendanceRepo.findByMeetupId(meetup.id);
     const userAttendess = await Promise.all(attendees.map(async (attendee) => ({
         role: attendee.role,
@@ -21,7 +21,6 @@ export const createMeetup = async (connection: Connection): Promise<Meetup> => {
     })));
 
     return {
-        ...meetup,
-        attendees: userAttendess
+        ...meetup
     }
 }

@@ -1,4 +1,4 @@
-// Generated in 2019-01-03T22:31:26+05:00
+// Generated in 2019-05-01T23:17:04+02:00
 
 export interface CreateMeetupInput {
   name: string;
@@ -60,7 +60,7 @@ export interface Meetup {
 
   status: MeetupStatus;
 
-  created_at: DateTime;
+  createdAt: DateTime;
 
   attendees: MeetupAttendance[];
 }
@@ -224,7 +224,7 @@ export namespace MeetupResolvers {
 
     status?: StatusResolver<MeetupStatus, TypeParent, Context>;
 
-    created_at?: CreatedAtResolver<DateTime, TypeParent, Context>;
+    createdAt?: CreatedAtResolver<DateTime, TypeParent, Context>;
 
     attendees?: AttendeesResolver<MeetupAttendance[], TypeParent, Context>;
   }
