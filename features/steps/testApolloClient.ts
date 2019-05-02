@@ -9,8 +9,8 @@ export type GraphQLContext = Map<string, any>;
 
 export const testApolloClient = (port: number) => {
     const context: GraphQLContext = new Map([
-        ['accessToken', null],        
-      ]);
+        ['accessToken', null],
+    ]);
 
     const authLink = setContext((_, { headers }) => {
         const accessToken = context.get('accessToken');
@@ -26,7 +26,7 @@ export const testApolloClient = (port: number) => {
         fetch
     });
     // Disable cache for all requests
-    const defaultOptions = {        
+    const defaultOptions = {
         query: {
             fetchPolicy: 'network-only' as FetchPolicy,
             errorPolicy: 'all' as ErrorPolicy,
@@ -38,18 +38,13 @@ export const testApolloClient = (port: number) => {
         defaultOptions
     });
 
-    const getContext = (key: string) => {
-        return context.get(key);
-      };
-    
-      const updateContext = (key: string, value: any) => {
-        return context.set(key, value);
-      };
+    const setAccessToken = (value: any) => {
+        return context.set('accessToken', value);
+    };
 
     return {
-        client,
-        getContext,
-        updateContext,
+        client,        
+        setAccessToken,
         mutate: client.mutate,
         query: client.query
     }

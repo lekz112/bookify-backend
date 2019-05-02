@@ -4,6 +4,7 @@ export const cancelMeetupAttendanceMutation = gql`
 mutation CancelMeetupAttendance($meetupId: String!) {
   cancelMeetupAttendance(meetupId: $meetupId) {
     role
+    status
     user {
       id
     }

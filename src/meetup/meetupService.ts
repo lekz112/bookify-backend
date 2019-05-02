@@ -7,11 +7,11 @@ export class MeetupService {
         
     constructor(private meetupRepository: MeetupRepository, private meetupAttendanceRepository: MeetupAttendanceRepository) { }
 
-    async createMeetup(userId: string, name: string): Promise<any> {        
+    async createMeetup(userId: string, name: string): Promise<Meetup> {        
         // TODO: wrap into transaction
         let meetup = await this.meetupRepository.create(name);
         let attendee = await this.meetupAttendanceRepository.create(userId, meetup.id, MeetupRole.Owner);                
-        let result = { ...meetup,  attendess: [attendee] }        
+        let result = { ...meetup,  attendess: [attendee] }                
         return result
     }
 

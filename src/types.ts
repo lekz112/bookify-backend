@@ -1,4 +1,4 @@
-// Generated in 2019-05-01T23:17:04+02:00
+// Generated in 2019-05-02T23:02:42+02:00
 
 export interface CreateMeetupInput {
   name: string;
@@ -66,6 +66,8 @@ export interface Meetup {
 }
 
 export interface MeetupAttendance {
+  id: string;
+
   user: User;
 
   role: MeetupRole;
@@ -261,6 +263,8 @@ export namespace MeetupAttendanceResolvers {
     Context = BookifyContext,
     TypeParent = MeetupAttendance
   > {
+    id?: IdResolver<string, TypeParent, Context>;
+
     user?: UserResolver<User, TypeParent, Context>;
 
     role?: RoleResolver<MeetupRole, TypeParent, Context>;
@@ -268,6 +272,11 @@ export namespace MeetupAttendanceResolvers {
     status?: StatusResolver<MeetupAttendanceStatus, TypeParent, Context>;
   }
 
+  export type IdResolver<
+    R = string,
+    Parent = MeetupAttendance,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
   export type UserResolver<
     R = User,
     Parent = MeetupAttendance,

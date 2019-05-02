@@ -1,56 +1,60 @@
-import { Given, When, Then } from "cucumber";
-import { createMeetup } from "../fixtures";
 import { expect } from 'chai';
-import { MeetupAttendance, Meetup } from "../../src/types";
+import { Then, When, Given } from "cucumber";
+import { Meetup, MeetupAttendance } from "../../src/types";
 import { applyForMeetupMutation } from '../queries/applyForMeetupMutation';
-import { meetupByIdQuery } from '../queries/meetupByIdQuery';
 import { cancelMeetupAttendanceMutation } from '../queries/cancelMeetupAttendance';
+import { meetupByIdQuery } from '../queries/meetupByIdQuery';
 
-Given(/^a meetup$/, async function () {
-    this.meetup = await createMeetup(this.connection);
+Given('the user is an attendee at the meetup {string}', async function (name: string) {
+    const meetupId = this.meetups.get(name);
+    await this.client.mutate({ mutation: applyForMeetupMutation, variables: { meetupId } });
 });
 
-Given(/^the user is not an attendee at the meetup$/, async function () {
-    const response = await this.client.query({query: meetupByIdQuery, variables: { id: this.meetup.id}});
-    const meetup = (response.data as any).meetup as Meetup;
-    expect(meetup.attendees.some((attendee) => attendee.user.id == this.userId)).to.be.false        
-});
-
-Given(/^the user is an attendee at the meetup$/, async function() {
-    this.response = await this.client.mutate({ mutation: applyForMeetupMutation, variables: { meetupId: this.meetup.id } });
-    // TODO: Should we assert here? We kinda have another scenario for this
-});
-
-When(/^the user applies for the meetup$/, async function () {
+When('the user applies for the meetup {string}', async function (name: string) {
+    const meetupId = this.meetups.get(name);
     try {
-        this.response = await this.client.mutate({ mutation: applyForMeetupMutation, variables: { meetupId: this.meetup.id } });        
-        this.error = undefined;
+        this.response = await this.client.mutate({ mutation: applyForMeetupMutation, variables: { meetupId } });
     }
     catch (error) {
-        this.response = undefined;
         this.error = error;
     }
 });
 
-When('the user cancels attendance to the meetup', async function () {    
-    this.response = await this.client.mutate({mutation: cancelMeetupAttendanceMutation, variables: { meetupId: this.meetup.id}});    
+When('the user cancels attendance to the meetup', async function () {
+    this.response = await this.client.mutate({ mutation: cancelMeetupAttendanceMutation, variables: { meetupId: this.meetup.id } });
 });
 
-Then(/^the attendance should be '(.*)'$/, async function (status) {
-    const response = await this.client.query({query: meetupByIdQuery, variables: { id: this.meetup.id}});
-    const meetup = (response.data as any).meetup as Meetup;
-    
-    expect(meetup.attendees.some((attendee) => attendee.user.id == this.userId && attendee.status == status)).to.be.true        
+When('the user cancels attendance to the meetup {string}', async function (name: string) {
+    const meetupId = this.meetups.get(name);
+    try {
+        this.response = await this.client.mutate({ mutation: cancelMeetupAttendanceMutation, variables: { meetupId } });
+    }
+    catch (error) {
+        this.error = error;
+    }
 });
 
-
-Then(/^the user should be an attendee for the meetup$/, async function () {
-    const response = await this.client.query({query: meetupByIdQuery, variables: { id: this.meetup.id}});
-    const meetup = (response.data as any).meetup as Meetup;
-    
-    expect(meetup.attendees.some((attendee) => attendee.user.id == this.userId)).to.be.true        
+Then('the user should receive successfull reservation with status {string} and role {string}', function (status: string, role: string) {
+    const reservation = this.response.data.applyForMeetup;
+    expect(reservation.status).to.be.equal(status);
+    expect(reservation.role).to.be.equal(role);
 });
 
-Then(/^the user should see an error '(.*)'$/, function (error) {    
+Then('the user should receive his reservation with status {string}', function (status: string) {
+    const reservation = this.response.data.cancelMeetupAttendance;
+    expect(reservation.status).to.be.equal(status);    
+});
+
+Then('the user should be an attendee for the meetup {string}', async function (name: string) {
+    const meetupId = this.meetups.get(name)
+    const response = await this.client.query({ query: meetupByIdQuery, variables: { id: meetupId } });
+    const meetup = response.data.meetup as Meetup;
+
+    expect(meetup.attendees.some(
+        (attendee) => attendee.user.email == this.signedInUserEmail
+    )).to.be.true
+});
+
+Then('the user should see an error {string}', function (error: string) {
     expect(this.error.graphQLErrors[0].message).to.be.equal(error);
-  });
+});
