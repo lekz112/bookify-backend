@@ -7,6 +7,7 @@ import { createContextFunction } from "./createContextFunction";
 import { MeetupAttendanceRepository, MeetupRepository } from './meetup';
 import { UserService } from './users';
 import { MeetupService } from './meetup/meetupService';
+import { Pool } from 'pg';
 
 export type BookifyContext = {
     meetupRepository: MeetupRepository
@@ -33,7 +34,10 @@ const main = async () => {
     // Initialize DB connection    
     
     const connection = await createConnection();    
-    const contextFunction = createContextFunction(connection);
+    const pool = new Pool({
+        connectionString: process.env.DB_URL
+    });    
+    const contextFunction = createContextFunction(connection, pool);
     const apolloServer = createApolloServer(contextFunction);
     
     apolloServer.applyMiddleware({ app: koaServer })

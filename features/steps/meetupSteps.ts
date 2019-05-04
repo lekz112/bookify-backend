@@ -30,9 +30,9 @@ Then('the user should see meetup called {string} in the list', function (name) {
 });
 
 When('the user cancels the meetup called {string}', async function(name: string) {    
-    const meetups = await this.client.query({ query: MeetupsQuery });
-    const id = (meetups.data as any).meetups.find((meetup: Meetup) => meetup.name == name).id;
-    const response = await this.client.mutate({ mutation: CancelMeetupMutation, variables: { id } });
+    const meetups = await this.client.query({ query: MeetupsQuery });    
+    const id = (meetups.data as any).meetups.find((meetup: Meetup) => meetup.name == name).id;    
+    const response = await this.client.mutate({ mutation: CancelMeetupMutation, variables: { id } });    
     this.response = (response.data as any).cancelMeetup;
 });
 

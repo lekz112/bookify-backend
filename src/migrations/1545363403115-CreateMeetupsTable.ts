@@ -6,8 +6,8 @@ export class CreateMeetupsTable1545363403115 implements MigrationInterface {
         return queryRunner.query(`
             CREATE TABLE meetups (
                 id uuid PRIMARY KEY DEFAULT uuid_generate_v1(),
-                name VARCHAR(255) NOT NULL,
-                status VARCHAR(255) NOT NULL,
+                name TEXT NOT NULL,
+                status TEXT NOT NULL,
                 created_at TIMESTAMP NOT NULL DEFAULT NOW()
             )
         `);

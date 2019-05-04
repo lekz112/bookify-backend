@@ -6,6 +6,7 @@ import { BookifyContext } from "./index";
 import { Context } from "koa";
 import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
 import { MeetupService } from "./meetup/meetupService";
+import { Pool } from "pg";
 
 const extractBearerToken = (header: string): string | undefined => {
     if (!header) return;
@@ -20,16 +21,11 @@ const extractBearerToken = (header: string): string | undefined => {
     return;
 };
 
-export const createContextFunction = (connection: Connection) => {
-    const meetupRepository = new PostgressMetupRepository(connection);
-    const meetupAttendanceRepository = new PostgressMeetupAttendanceRepository(connection);
-    const userService = new UserService(new PostgressUsersRepository(connection));
-    const meetupService = new MeetupService(meetupRepository, meetupAttendanceRepository);
-
-    return async ({ ctx }: { ctx: Context }): Promise<BookifyContext> => {
+export const createContextFunction = (connection: Connection, pool: Pool) => {    
+    return async ({ ctx }: { ctx: Context }): Promise<BookifyContext> => {        
         const authorizationHeader = ctx.get('Authorization');
         const bearerToken = extractBearerToken(authorizationHeader);
-
+        
         let userId: string
         if (bearerToken) {
             try {
@@ -41,6 +37,15 @@ export const createContextFunction = (connection: Connection) => {
                 }
             }
         }
+        
+        const client = await pool.connect();
+        const meetupRepository = new PostgressMetupRepository(client);
+        const meetupAttendanceRepository = new PostgressMeetupAttendanceRepository(connection);
+        const userService = new UserService(new PostgressUsersRepository(connection));
+        const meetupService = new MeetupService(meetupRepository, meetupAttendanceRepository);
+
+        // Release the client
+        ctx.res.on("finish", () => client.release());
 
         return {
             meetupRepository,

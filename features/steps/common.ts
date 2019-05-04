@@ -11,6 +11,7 @@ import { testApolloClient } from './testApolloClient';
 import { signUpMutation } from '../queries/signUpMutation';
 import { createMeetupMutation } from '../queries/createMeetupMutation';
 import { User, MeetupAttendance } from 'types';
+import { Pool } from 'pg';
 
 
 declare module 'cucumber' {
@@ -22,17 +23,21 @@ declare module 'cucumber' {
         error: any;
         signedInUserEmail: string;
         userTokens: Map<string, string>;
-        meetups: Map<string, string>
+        meetups: Map<string, string>;
+        pool: Pool
     }
 }
 
 Before(async function () {
     // Reset DB
     this.connection = await createConnection();
+    this.pool = new Pool({
+        connectionString: process.env.DB_URL
+    });
     await this.connection.dropDatabase();
     await this.connection.runMigrations();
 
-    const contextFunction = createContextFunction(this.connection);
+    const contextFunction = createContextFunction(this.connection, this.pool);
 
     // Start server
     const port = 8888;
@@ -54,6 +59,7 @@ After(async function () {
     if (this.connection) {
         await this.connection.close();
     }
+    await this.pool.end();
 });
 
 Given('the system has the following users:', async function (dataTable: TableDefinition) {
