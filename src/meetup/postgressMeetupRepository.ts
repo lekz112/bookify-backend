@@ -1,4 +1,4 @@
-import { PoolClient } from "pg";
+import { PgClient } from "../pgClient";
 import { Meetup, MeetupStatus } from "./meetup";
 import { MeetupRepository } from "./meetupRepository";
 
@@ -11,38 +11,46 @@ class MeetupEntity {
 
 export class PostgressMetupRepository implements MeetupRepository {
 
-    constructor(private client: PoolClient) {
+    constructor(private client: PgClient) {
     }
 
     findAll(): Promise<Meetup[]> {
         return this.client
-            .query('SELECT * from meetups WHERE status != $1', [MeetupStatus.Canceled])
-            .then(result => result.rows as MeetupEntity[])
+            .query<MeetupEntity>(
+                'SELECT * from meetups WHERE status != :status',
+                { status: MeetupStatus.Canceled }
+            )
             .then(entities => entities.map(PostgressMetupRepository.mapToDomain));
     }
 
     findById(id: string): Promise<Meetup | undefined> {
         return this.client
-            .query('SELECT * from meetups WHERE id = $1', [id])
-            .then(result => result.rows[0] as MeetupEntity)
+            .queryOne<MeetupEntity>(
+                'SELECT * from meetups WHERE id = :id',
+                { id }
+            )
             .then(PostgressMetupRepository.mapToDomain);
     }
 
     async create(name: string): Promise<Meetup> {
         return this.client
-            .query('INSERT INTO meetups(name, status) VALUES ($1,$2) RETURNING *', [name, MeetupStatus.Scheduled])
-            .then(result => result.rows[0] as MeetupEntity)
+            .queryOne<MeetupEntity>(
+                'INSERT INTO meetups(name, status) VALUES (:name, :status) RETURNING *',
+                { name, status: MeetupStatus.Scheduled }
+            )
             .then(PostgressMetupRepository.mapToDomain)
     }
 
-    async setStatus(id: string, status: string): Promise<Meetup> {        
+    async setStatus(id: string, status: string): Promise<Meetup> {
         return this.client
-            .query('UPDATE meetups SET status = $1 WHERE id = $2 RETURNING *', [status, id])            
-            .then(result => result.rows[0] as MeetupEntity)
-            .then(PostgressMetupRepository.mapToDomain)        
+            .queryOne(
+                'UPDATE meetups SET status = :status WHERE id = :id RETURNING *',
+                { status, id }
+            )
+            .then(PostgressMetupRepository.mapToDomain)
     }
 
-    private static mapToDomain(entity: MeetupEntity): Meetup {        
+    private static mapToDomain(entity: MeetupEntity): Meetup {
         return {
             ...entity,
             status: entity.status as MeetupStatus,

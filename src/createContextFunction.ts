@@ -1,12 +1,13 @@
-import { Connection } from "typeorm";
-import { PostgressMetupRepository, PostgressMeetupAttendanceRepository } from "./meetup";
-import { PostgressUsersRepository } from "./users/postgressUsersRepository";
-import { UserService } from "./users";
-import { BookifyContext } from "./index";
-import { Context } from "koa";
 import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
-import { MeetupService } from "./meetup/meetupService";
+import { Context } from "koa";
 import { Pool } from "pg";
+import { Connection } from "typeorm";
+import { BookifyContext } from "./index";
+import { PostgressMeetupAttendanceRepository, PostgressMetupRepository } from "./meetup";
+import { MeetupService } from "./meetup/meetupService";
+import { PgClient } from "./pgClient";
+import { UserService } from "./users";
+import { PostgressUsersRepository } from "./users/postgressUsersRepository";
 
 const extractBearerToken = (header: string): string | undefined => {
     if (!header) return;
@@ -39,7 +40,8 @@ export const createContextFunction = (connection: Connection, pool: Pool) => {
         }
         
         const client = await pool.connect();
-        const meetupRepository = new PostgressMetupRepository(client);
+        const pgClient = new PgClient(client);
+        const meetupRepository = new PostgressMetupRepository(pgClient);
         const meetupAttendanceRepository = new PostgressMeetupAttendanceRepository(connection);
         const userService = new UserService(new PostgressUsersRepository(connection));
         const meetupService = new MeetupService(meetupRepository, meetupAttendanceRepository);
