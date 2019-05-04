@@ -8,6 +8,7 @@
         "baseUrl": "./src",
         "esModuleInterop": true,        
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,                             
+        "emitDecoratorMetadata": true,       
+        "strictNullChecks": true                      
     }
 }

@@ -27,7 +27,7 @@ export const createContextFunction = (connection: Connection, pool: Pool) => {
         const authorizationHeader = ctx.get('Authorization');
         const bearerToken = extractBearerToken(authorizationHeader);
         
-        let userId: string
+        let userId: string | undefined
         if (bearerToken) {
             try {
                 userId = (jsonwebtoken.verify(bearerToken, "secret") as any).id; // result.id

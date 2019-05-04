@@ -32,15 +32,27 @@ export const meetupResolvers: MeetupResolvers = {
     },
     Mutation: {
         createMeetup: (_parent, { input }, { meetupService, userId }): Promise<any> => {
+            if (!userId) {
+                throw new Error("Not authorized");
+            }
             return meetupService.createMeetup(userId, input.name);            
         },
         cancelMeetup: (_parent, { input }, { meetupService, userId }): Promise<any> => {
+            if (!userId) {
+                throw new Error("Not authorized");
+            }
             return meetupService.cancelMeetup(userId, input.id)
         },
         applyForMeetup: (_parent, { meetupId }, { userId, meetupService }): Promise<any> => {            
+            if (!userId) {
+                throw new Error("Not authorized");
+            }
             return meetupService.applyForMeetup(userId, meetupId);            
         },
         cancelMeetupAttendance: (_parent, { meetupId }, { userId, meetupService }): Promise<any> => {
+            if (!userId) {
+                throw new Error("Not authorized");
+            }
             return meetupService.cancelMeetupAttendance(userId, meetupId);            
         }
     },

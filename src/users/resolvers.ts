@@ -12,7 +12,10 @@ interface UserResolvers {
 
 export const userResolvers: UserResolvers = {
     Query: {
-        user: (_parent, _args, { userService, userId }): Promise<User> => {                                           
+        user: (_parent, _args, { userService, userId }): Promise<User> => {
+            if (!userId) {
+                throw new Error("Not authorized");
+            }                                           
             return userService.findById(userId)
         }
     },
