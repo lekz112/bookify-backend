@@ -1,10 +1,10 @@
 typeorm migration:create -n PostRefactoring
 postgres -D /usr/local/var/postgres/
 
-table Meetups
+table Events
 
-table MeetupInvitations(
-    meetup_id
+table EventInvitations(
+    event_id
     user_id
 )
 
@@ -12,11 +12,11 @@ table Users
 
 table Messages(
     user_id
-    meetup_id
+    event_id
 )
 
-My meetups:
-select meetup.*, meetupInvitations.status 
-from meetupInvitations
-join meetup on meetupInvitations.meetup_id = meetup.meetup_id
-where meetupInvitations.user_id = ? and meetupInvitations.status in [waiting, confirmed, canceled]
+My events:
+select event.*, eventInvitations.status 
+from eventInvitations
+join event on eventInvitations.event_id = event.event_id
+where eventInvitations.user_id = ? and eventInvitations.status in [waiting, confirmed, canceled]

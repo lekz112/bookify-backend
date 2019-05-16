@@ -1,11 +1,11 @@
-export class Meetup {
+export class Event {
     id: string
     name: string    
-    status: MeetupStatus    
+    status: EventStatus    
     createdAt: Date  
 }
 
-export enum MeetupStatus {
+export enum EventStatus {
     Scheduled = "SCHEDULED",
     Canceled = "CANCELED"
 }

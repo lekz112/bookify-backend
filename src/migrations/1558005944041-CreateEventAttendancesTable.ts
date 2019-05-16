@@ -1,23 +1,23 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class CreateMeetupAttendanceTable1546260272481 implements MigrationInterface {
+export class CreateEventAttendancesTable1558005944041 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         return queryRunner.query(`
-            CREATE TABLE meetup_attendances (           
+            CREATE TABLE event_attendances (           
                 id uuid PRIMARY KEY DEFAULT uuid_generate_v1(),     
                 user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,                
-                meetup_id uuid NOT NULL REFERENCES meetups(id) ON DELETE CASCADE,
+                event_id uuid NOT NULL REFERENCES events(id) ON DELETE CASCADE,
                 role VARCHAR(20) NOT NULL,
                 canceled_at TIMESTAMP                              
             );            
-            CREATE UNIQUE INDEX ON meetup_attendances (meetup_id, user_id) WHERE canceled_at IS NULL;
+            CREATE UNIQUE INDEX ON event_attendances (event_id, user_id) WHERE canceled_at IS NULL;
         `);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
         return queryRunner.query(`
-            DROP TABLE meetup_attendances;
+            DROP TABLE event_attendances;
         `);
     }
 

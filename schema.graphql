@@ -4,65 +4,65 @@ schema {
 }
 
 type Query {
-  meetups: [Meetup!]!
-  meetup(id: String!): Meetup!
+  events: [Event!]!
+  event(id: ID!): Event!
   user: User!
 }
 
 type Mutation {
-  createMeetup(input: CreateMeetupInput!): Meetup!
-  cancelMeetup(input: CancelMeetupInput!): Meetup!
+  createEvent(input: CreateEventInput!): Event!
+  cancelEvent(input: CancelEventInput!): Event!
 
-  applyForMeetup(meetupId: String!): MeetupAttendance!
-  cancelMeetupAttendance(meetupId: String!): MeetupAttendance!
+  applyForEvent(eventId: ID!): EventAttendance!
+  cancelEventAttendance(eventId: ID!): EventAttendance!
 
-  signUp(input: SignUpInput!): SignUpPayload
+  signUp(input: SignUpInput!): SignUpPayload!
   signIn(input: SignInInput!): SignInPayload!
 }
 
 scalar DateTime
 
-type Meetup {
-  id: String!
+type Event {
+  id: ID!
   name: String!
-  status: MeetupStatus!
+  status: EventStatus!
   createdAt: DateTime!
-  attendees: [MeetupAttendance!]!
+  attendees: [EventAttendance!]!
 }
 
-type MeetupAttendance {
-  id: String!
+type EventAttendance {
+  id: ID!
   user: User!
-  role: MeetupRole!
-  status: MeetupAttendanceStatus!
+  role: EventAttendanceRole!
+  status: EventAttendanceStatus!
 }
 
 type User {
-  id: String!
+  id: ID!
   email: String!
 }
 
-enum MeetupStatus {
+enum EventStatus {
   SCHEDULED
   CANCELED
 }
 
-enum MeetupAttendanceStatus {
+enum EventAttendanceStatus {
   CONFIRMED
   CANCELED
 }
 
-enum MeetupRole {
+enum EventAttendanceRole {
   OWNER
   GUEST
 }
 
-input CreateMeetupInput {
+input CreateEventInput {
   name: String!
 }
 
-input CancelMeetupInput {
-  id: String!
+input CancelEventInput {
+  id: ID!
 }
 
 input SignUpInput {

@@ -1,8 +1,8 @@
 import { gql } from "apollo-server-koa";
 
-export const MeetupsQuery = gql`
+export const eventsQuery = gql`
 query {
-  meetups {
+  events {
     id
     name
     status

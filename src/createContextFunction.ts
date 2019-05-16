@@ -2,12 +2,22 @@ import jsonwebtoken, { TokenExpiredError } from "jsonwebtoken";
 import { Context } from "koa";
 import { Pool } from "pg";
 import { Connection } from "typeorm";
-import { BookifyContext } from "./index";
-import { PostgressMeetupAttendanceRepository, PostgressMetupRepository } from "./meetup";
-import { MeetupService } from "./meetup/meetupService";
+import { PostgressEventAttendanceRepository as PostgressEventAttendanceRepository, PostgressMetupRepository as PostgressEventRepository } from "./events";
+import { EventService } from "./events/eventService";
 import { PgClient } from "./pgClient";
 import { UserService } from "./users";
 import { PostgressUsersRepository } from "./users/postgressUsersRepository";
+import { EventRepository } from "events/eventRepository";
+import { EventAttendanceRepository } from "events/attendance/eventAttendanceRepository";
+
+export type BookifyContext = {
+    eventRepository: EventRepository
+    eventAttendanceRepository: EventAttendanceRepository
+    userService: UserService
+    eventService: EventService
+    userId: string | undefined
+}
+
 
 const extractBearerToken = (header: string): string | undefined => {
     if (!header) return;
@@ -41,19 +51,19 @@ export const createContextFunction = (connection: Connection, pool: Pool) => {
         
         const client = await pool.connect();
         const pgClient = new PgClient(client);
-        const meetupRepository = new PostgressMetupRepository(pgClient);
-        const meetupAttendanceRepository = new PostgressMeetupAttendanceRepository(connection);
+        const eventRepository = new PostgressEventRepository(pgClient);
+        const eventAttendanceRepository = new PostgressEventAttendanceRepository(connection);
         const userService = new UserService(new PostgressUsersRepository(connection));
-        const meetupService = new MeetupService(meetupRepository, meetupAttendanceRepository);
+        const eventService = new EventService(eventRepository, eventAttendanceRepository);
 
         // Release the client
         ctx.res.on("finish", () => client.release());
 
         return {
-            meetupRepository,
-            meetupAttendanceRepository,
+            eventRepository,
+            eventAttendanceRepository,
             userService,
-            meetupService,
+            eventService,
             userId
         }
     };

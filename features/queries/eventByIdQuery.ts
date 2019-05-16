@@ -1,8 +1,8 @@
 import { gql } from "apollo-server-koa";
 
-export const meetupByIdQuery = gql`
-query MeetupById($id: String!) {
-  meetup(id: $id) {
+export const eventByIdQuery = gql`
+query EventById($id: ID!) {
+  event(id: $id) {
     id
     name
     status

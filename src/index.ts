@@ -4,20 +4,10 @@ import { default as KoaRouter } from 'koa-router';
 import { createConnection, getConnectionOptions } from 'typeorm';
 import { createApolloServer } from './createApolloServer';
 import { createContextFunction } from "./createContextFunction";
-import { MeetupAttendanceRepository, MeetupRepository } from './meetup';
+import { EventAttendanceRepository, EventRepository } from './events';
 import { UserService } from './users';
-import { MeetupService } from './meetup/meetupService';
+import { EventService } from './events/eventService';
 import { Pool } from 'pg';
-
-export type BookifyContext = {
-    meetupRepository: MeetupRepository
-    meetupAttendanceRepository: MeetupAttendanceRepository
-    userService: UserService
-    meetupService: MeetupService
-    userId: string | undefined
-}
-
-
 
 const main = async () => {
     const PORT = 8080;

@@ -1,4 +1,4 @@
-Feature: Meetup
+Feature: Event
 
 Background:
         Given the system has the following users:
@@ -6,17 +6,17 @@ Background:
             | john@doe.de   | johndoe  |                    
         And the user is signed in as 'john@doe.de'
 
-    Scenario: Creating a Meetup        
-        When the user creates a meetup called 'MyMeetup'
-        Then the meetup called 'MyMeetup' should be created
-        And the user should be the owner of the meetup
+    Scenario: Creating a Event        
+        When the user creates a event called 'MyEvent'
+        Then the event called 'MyEvent' should be created
+        And the user should be the owner of the event
 
-    Scenario: Fetching a newly created Meetup        
-        When the user creates a meetup called 'MyMeetup'
-        And the user fetches list of meetups
-        Then the user should see meetup called 'MyMeetup' in the list             
+    Scenario: Fetching a newly created Event        
+        When the user creates a event called 'MyEvent'
+        And the user fetches list of events
+        Then the user should see event called 'MyEvent' in the list             
 
-    Scenario: Canceling created Meetup        
-        When the user creates a meetup called 'MyMeetup'
-        And the user cancels the meetup called 'MyMeetup'
-        Then the meetup should be caneceled
+    Scenario: Canceling created Event        
+        When the user creates a event called 'MyEvent'
+        And the user cancels the event called 'MyEvent'
+        Then the event should be caneceled

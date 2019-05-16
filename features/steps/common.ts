@@ -1,17 +1,14 @@
 import { After, Before, Given, TableDefinition } from 'cucumber';
 import { default as Koa } from 'koa';
-import { Meetup } from 'meetup/meetup';
 import { Server } from "net";
-import { Connection, createConnection } from "typeorm";
-import uuid from 'uuid';
+import { Pool } from 'pg';
+import { createConnection } from "typeorm";
+import { EventAttendance } from 'types';
 import { createApolloServer } from "../../src/createApolloServer";
 import { createContextFunction } from "../../src/createContextFunction";
-import { signJWT } from '../../src/users/JWT';
-import { testApolloClient } from './testApolloClient';
+import { createEventMutation } from '../queries/createMeetupMutation';
 import { signUpMutation } from '../queries/signUpMutation';
-import { createMeetupMutation } from '../queries/createMeetupMutation';
-import { User, MeetupAttendance } from 'types';
-import { Pool } from 'pg';
+import { testApolloClient } from './testApolloClient';
 
 
 declare module 'cucumber' {
@@ -19,11 +16,11 @@ declare module 'cucumber' {
         server: Server;
         client: ReturnType<typeof testApolloClient>;
         response: any;
-        reservation: MeetupAttendance;
+        reservation: EventAttendance;
         error: any;
         signedInUserEmail: string;
         userTokens: Map<string, string>;
-        meetups: Map<string, string>;
+        events: Map<string, string>;
         pool: Pool
     }
 }
@@ -49,7 +46,7 @@ Before(async function () {
     // Create test client
     this.client = testApolloClient(port);
     this.userTokens = new Map();
-    this.meetups = new Map();
+    this.events = new Map();
 });
 
 After(async function () {
@@ -72,15 +69,15 @@ Given('the system has the following users:', async function (dataTable: TableDef
     }));
 });
 
-Given('the system has the following meetups:', async function (dataTable: TableDefinition) {
+Given('the system has the following events:', async function (dataTable: TableDefinition) {
     await Promise.all(dataTable.hashes().map(async row => {
         const name = row['name'];
         const owner = row['owner'];
 
         this.client.setAccessToken(this.userTokens.get(owner));
-        const response = await this.client.mutate({ mutation: createMeetupMutation, variables: { name } });
-        const meetupId = response.data.createMeetup.id;
-        this.meetups.set(name, meetupId);
+        const response = await this.client.mutate({ mutation: createEventMutation, variables: { name } });
+        const eventId = response.data.createEvent.id;
+        this.events.set(name, eventId);
     }));
 });
 

@@ -1,10 +1,10 @@
-// Generated in 2019-05-02T23:02:42+02:00
+// Generated in 2019-05-16T13:45:56+02:00
 
-export interface CreateMeetupInput {
+export interface CreateEventInput {
   name: string;
 }
 
-export interface CancelMeetupInput {
+export interface CancelEventInput {
   id: string;
 }
 
@@ -20,17 +20,17 @@ export interface SignInInput {
   password: string;
 }
 
-export enum MeetupStatus {
+export enum EventStatus {
   Scheduled = "SCHEDULED",
   Canceled = "CANCELED"
 }
 
-export enum MeetupRole {
+export enum EventAttendanceRole {
   Owner = "OWNER",
   Guest = "GUEST"
 }
 
-export enum MeetupAttendanceStatus {
+export enum EventAttendanceStatus {
   Confirmed = "CONFIRMED",
   Canceled = "CANCELED"
 }
@@ -46,33 +46,33 @@ export type DateTime = any;
 // ====================================================
 
 export interface Query {
-  meetups: Meetup[];
+  events: Event[];
 
-  meetup: Meetup;
+  event: Event;
 
   user: User;
 }
 
-export interface Meetup {
+export interface Event {
   id: string;
 
   name: string;
 
-  status: MeetupStatus;
+  status: EventStatus;
 
   createdAt: DateTime;
 
-  attendees: MeetupAttendance[];
+  attendees: EventAttendance[];
 }
 
-export interface MeetupAttendance {
+export interface EventAttendance {
   id: string;
 
   user: User;
 
-  role: MeetupRole;
+  role: EventAttendanceRole;
 
-  status: MeetupAttendanceStatus;
+  status: EventAttendanceStatus;
 }
 
 export interface User {
@@ -82,15 +82,15 @@ export interface User {
 }
 
 export interface Mutation {
-  createMeetup: Meetup;
+  createEvent: Event;
 
-  cancelMeetup: Meetup;
+  cancelEvent: Event;
 
-  applyForMeetup: MeetupAttendance;
+  applyForEvent: EventAttendance;
 
-  cancelMeetupAttendance: MeetupAttendance;
+  cancelEventAttendance: EventAttendance;
 
-  signUp?: SignUpPayload | null;
+  signUp: SignUpPayload;
 
   signIn: SignInPayload;
 }
@@ -111,20 +111,20 @@ export interface SignInPayload {
 // Arguments
 // ====================================================
 
-export interface MeetupQueryArgs {
+export interface EventQueryArgs {
   id: string;
 }
-export interface CreateMeetupMutationArgs {
-  input: CreateMeetupInput;
+export interface CreateEventMutationArgs {
+  input: CreateEventInput;
 }
-export interface CancelMeetupMutationArgs {
-  input: CancelMeetupInput;
+export interface CancelEventMutationArgs {
+  input: CancelEventInput;
 }
-export interface ApplyForMeetupMutationArgs {
-  meetupId: string;
+export interface ApplyForEventMutationArgs {
+  eventId: string;
 }
-export interface CancelMeetupAttendanceMutationArgs {
-  meetupId: string;
+export interface CancelEventAttendanceMutationArgs {
+  eventId: string;
 }
 export interface SignUpMutationArgs {
   input: SignUpInput;
@@ -135,7 +135,7 @@ export interface SignInMutationArgs {
 
 import { GraphQLResolveInfo, GraphQLScalarTypeConfig } from "graphql";
 
-import { BookifyContext } from "./index";
+import { BookifyContext } from "./createContextFunction";
 
 export type Resolver<Result, Parent = {}, Context = {}, Args = {}> = (
   parent: Parent,
@@ -190,24 +190,24 @@ export type DirectiveResolverFn<TResult, TArgs = {}, TContext = {}> = (
 
 export namespace QueryResolvers {
   export interface Resolvers<Context = BookifyContext, TypeParent = {}> {
-    meetups?: MeetupsResolver<Meetup[], TypeParent, Context>;
+    events?: EventsResolver<Event[], TypeParent, Context>;
 
-    meetup?: MeetupResolver<Meetup, TypeParent, Context>;
+    event?: EventResolver<Event, TypeParent, Context>;
 
     user?: UserResolver<User, TypeParent, Context>;
   }
 
-  export type MeetupsResolver<
-    R = Meetup[],
+  export type EventsResolver<
+    R = Event[],
     Parent = {},
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
-  export type MeetupResolver<
-    R = Meetup,
+  export type EventResolver<
+    R = Event,
     Parent = {},
     Context = BookifyContext
-  > = Resolver<R, Parent, Context, MeetupArgs>;
-  export interface MeetupArgs {
+  > = Resolver<R, Parent, Context, EventArgs>;
+  export interface EventArgs {
     id: string;
   }
 
@@ -218,78 +218,78 @@ export namespace QueryResolvers {
   > = Resolver<R, Parent, Context>;
 }
 
-export namespace MeetupResolvers {
-  export interface Resolvers<Context = BookifyContext, TypeParent = Meetup> {
+export namespace EventResolvers {
+  export interface Resolvers<Context = BookifyContext, TypeParent = Event> {
     id?: IdResolver<string, TypeParent, Context>;
 
     name?: NameResolver<string, TypeParent, Context>;
 
-    status?: StatusResolver<MeetupStatus, TypeParent, Context>;
+    status?: StatusResolver<EventStatus, TypeParent, Context>;
 
     createdAt?: CreatedAtResolver<DateTime, TypeParent, Context>;
 
-    attendees?: AttendeesResolver<MeetupAttendance[], TypeParent, Context>;
+    attendees?: AttendeesResolver<EventAttendance[], TypeParent, Context>;
   }
 
   export type IdResolver<
     R = string,
-    Parent = Meetup,
+    Parent = Event,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
   export type NameResolver<
     R = string,
-    Parent = Meetup,
+    Parent = Event,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
   export type StatusResolver<
-    R = MeetupStatus,
-    Parent = Meetup,
+    R = EventStatus,
+    Parent = Event,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
   export type CreatedAtResolver<
     R = DateTime,
-    Parent = Meetup,
+    Parent = Event,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
   export type AttendeesResolver<
-    R = MeetupAttendance[],
-    Parent = Meetup,
+    R = EventAttendance[],
+    Parent = Event,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
 }
 
-export namespace MeetupAttendanceResolvers {
+export namespace EventAttendanceResolvers {
   export interface Resolvers<
     Context = BookifyContext,
-    TypeParent = MeetupAttendance
+    TypeParent = EventAttendance
   > {
     id?: IdResolver<string, TypeParent, Context>;
 
     user?: UserResolver<User, TypeParent, Context>;
 
-    role?: RoleResolver<MeetupRole, TypeParent, Context>;
+    role?: RoleResolver<EventAttendanceRole, TypeParent, Context>;
 
-    status?: StatusResolver<MeetupAttendanceStatus, TypeParent, Context>;
+    status?: StatusResolver<EventAttendanceStatus, TypeParent, Context>;
   }
 
   export type IdResolver<
     R = string,
-    Parent = MeetupAttendance,
+    Parent = EventAttendance,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
   export type UserResolver<
     R = User,
-    Parent = MeetupAttendance,
+    Parent = EventAttendance,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
   export type RoleResolver<
-    R = MeetupRole,
-    Parent = MeetupAttendance,
+    R = EventAttendanceRole,
+    Parent = EventAttendance,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
   export type StatusResolver<
-    R = MeetupAttendanceStatus,
-    Parent = MeetupAttendance,
+    R = EventAttendanceStatus,
+    Parent = EventAttendance,
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
 }
@@ -315,65 +315,61 @@ export namespace UserResolvers {
 
 export namespace MutationResolvers {
   export interface Resolvers<Context = BookifyContext, TypeParent = {}> {
-    createMeetup?: CreateMeetupResolver<Meetup, TypeParent, Context>;
+    createEvent?: CreateEventResolver<Event, TypeParent, Context>;
 
-    cancelMeetup?: CancelMeetupResolver<Meetup, TypeParent, Context>;
+    cancelEvent?: CancelEventResolver<Event, TypeParent, Context>;
 
-    applyForMeetup?: ApplyForMeetupResolver<
-      MeetupAttendance,
+    applyForEvent?: ApplyForEventResolver<EventAttendance, TypeParent, Context>;
+
+    cancelEventAttendance?: CancelEventAttendanceResolver<
+      EventAttendance,
       TypeParent,
       Context
     >;
 
-    cancelMeetupAttendance?: CancelMeetupAttendanceResolver<
-      MeetupAttendance,
-      TypeParent,
-      Context
-    >;
-
-    signUp?: SignUpResolver<SignUpPayload | null, TypeParent, Context>;
+    signUp?: SignUpResolver<SignUpPayload, TypeParent, Context>;
 
     signIn?: SignInResolver<SignInPayload, TypeParent, Context>;
   }
 
-  export type CreateMeetupResolver<
-    R = Meetup,
+  export type CreateEventResolver<
+    R = Event,
     Parent = {},
     Context = BookifyContext
-  > = Resolver<R, Parent, Context, CreateMeetupArgs>;
-  export interface CreateMeetupArgs {
-    input: CreateMeetupInput;
+  > = Resolver<R, Parent, Context, CreateEventArgs>;
+  export interface CreateEventArgs {
+    input: CreateEventInput;
   }
 
-  export type CancelMeetupResolver<
-    R = Meetup,
+  export type CancelEventResolver<
+    R = Event,
     Parent = {},
     Context = BookifyContext
-  > = Resolver<R, Parent, Context, CancelMeetupArgs>;
-  export interface CancelMeetupArgs {
-    input: CancelMeetupInput;
+  > = Resolver<R, Parent, Context, CancelEventArgs>;
+  export interface CancelEventArgs {
+    input: CancelEventInput;
   }
 
-  export type ApplyForMeetupResolver<
-    R = MeetupAttendance,
+  export type ApplyForEventResolver<
+    R = EventAttendance,
     Parent = {},
     Context = BookifyContext
-  > = Resolver<R, Parent, Context, ApplyForMeetupArgs>;
-  export interface ApplyForMeetupArgs {
-    meetupId: string;
+  > = Resolver<R, Parent, Context, ApplyForEventArgs>;
+  export interface ApplyForEventArgs {
+    eventId: string;
   }
 
-  export type CancelMeetupAttendanceResolver<
-    R = MeetupAttendance,
+  export type CancelEventAttendanceResolver<
+    R = EventAttendance,
     Parent = {},
     Context = BookifyContext
-  > = Resolver<R, Parent, Context, CancelMeetupAttendanceArgs>;
-  export interface CancelMeetupAttendanceArgs {
-    meetupId: string;
+  > = Resolver<R, Parent, Context, CancelEventAttendanceArgs>;
+  export interface CancelEventAttendanceArgs {
+    eventId: string;
   }
 
   export type SignUpResolver<
-    R = SignUpPayload | null,
+    R = SignUpPayload,
     Parent = {},
     Context = BookifyContext
   > = Resolver<R, Parent, Context, SignUpArgs>;

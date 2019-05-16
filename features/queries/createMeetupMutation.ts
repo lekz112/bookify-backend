@@ -1,8 +1,8 @@
 import { gql } from "apollo-server-koa";
 
-export const createMeetupMutation = gql`
-mutation CreateMeetup($name: String!) {
-    createMeetup(input: {
+export const createEventMutation = gql`
+mutation CreateEvent($name: String!) {
+    createEvent(input: {
         name: $name
     }) {
         id
