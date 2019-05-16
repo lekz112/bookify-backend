@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { Then, When, Given } from "cucumber";
-import { Event, EventAttendance } from "../../src/types";
+import { Event, EventAttendance } from "../../types";
 import { applyForEventMutation } from '../queries/applyForMeetupMutation';
 import { cancelEventAttendanceMutation } from '../queries/cancelMeetupAttendance';
 import { eventByIdQuery } from '../queries/eventByIdQuery';

@@ -1,4 +1,4 @@
-// Generated in 2019-05-16T13:45:56+02:00
+// Generated in 2019-05-16T16:19:23+02:00
 
 export interface CreateEventInput {
   name: string;

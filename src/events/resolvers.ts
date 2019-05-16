@@ -1,6 +1,4 @@
-import { QueryResolvers, MutationResolvers, EventAttendanceResolvers, EventAttendance, EventResolvers } from "types";
-
-import { EventAttendanceStatus } from "./attendance/eventAttendance";
+import { EventAttendanceResolvers, EventResolvers, MutationResolvers, QueryResolvers } from "types";
 
 interface EventResolvers {
     Query: {

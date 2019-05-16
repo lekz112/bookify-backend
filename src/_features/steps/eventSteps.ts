@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { Then, When } from "cucumber";
 import { createEventMutation } from '../queries/createMeetupMutation';
 import { CancelEventMutation } from '../queries/cancelMeetupMutation';
-import { EventStatus, Event, EventAttendanceRole } from '../../src/types';
+import { EventStatus, Event, EventAttendanceRole } from '../../types';
 import { eventsQuery } from '../queries/eventsQuery';
 
 When('the user creates a event called {string}', async function (name) {    
