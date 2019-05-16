@@ -1,7 +1,7 @@
 import { Connection } from "typeorm";
 import { EventAttendanceRepository } from "./eventAttendanceRepository";
 import { EventAttendance, EventAttendanceRole, EventAttendanceStatus } from "./eventAttendance";
-import { PgClient } from "pgClient";
+import { PgClient } from "persistance/pgClient";
 
 interface EventAttendanceEntity {
     id: string

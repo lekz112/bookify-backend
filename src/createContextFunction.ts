@@ -4,7 +4,7 @@ import { Pool } from "pg";
 import { Connection } from "typeorm";
 import { PostgressEventAttendanceRepository as PostgressEventAttendanceRepository, PostgressMetupRepository as PostgressEventRepository } from "./events";
 import { EventService } from "./events/eventService";
-import { PgClient } from "./pgClient";
+import { PgClient } from "./persistance/pgClient";
 import { UserService } from "./users";
 import { PostgressUsersRepository } from "./users/postgressUsersRepository";
 import { EventRepository } from "events/eventRepository";
@@ -54,7 +54,7 @@ export const createContextFunction = (connection: Connection, pool: Pool) => {
         const eventRepository = new PostgressEventRepository(pgClient);
         const eventAttendanceRepository = new PostgressEventAttendanceRepository(pgClient);
         const userService = new UserService(new PostgressUsersRepository(connection));
-        const eventService = new EventService(eventRepository, eventAttendanceRepository);
+        const eventService = new EventService(pgClient, eventRepository, eventAttendanceRepository);
 
         // Release the client
         ctx.res.on("finish", () => client.release());

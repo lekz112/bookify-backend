@@ -1,4 +1,4 @@
-import { PgClient } from "../pgClient";
+import { PgClient } from "../persistance/pgClient";
 import { Event, EventStatus } from "./event";
 import { EventRepository } from "./eventRepository";
 

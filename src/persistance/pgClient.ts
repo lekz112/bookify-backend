@@ -1,8 +1,9 @@
 import { PoolClient, QueryConfig } from "pg";
+import { TransactionScope } from "./transactionScope";
 
 const ValidParameterNameExpression = /^(\w+):?(\w*)$/;
 
-export class PgClient {
+export class PgClient implements TransactionScope {    
     constructor(private poolClient: PoolClient) { }
 
     async queryOne<T>(query: string, params?: any): Promise<T | undefined> {
@@ -53,5 +54,15 @@ export class PgClient {
             text: newQuery,
             values: parameterArray,
         };
+    }
+
+    async begin(): Promise<void> {
+        await this.poolClient.query('BEGIN');
+    }
+    async commit(): Promise<void> {
+        await this.poolClient.query('COMMIT');
+    }
+    async rollback(): Promise<void> {
+        await this.poolClient.query('ROLLBACK');
     }
 }
