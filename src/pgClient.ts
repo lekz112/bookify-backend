@@ -5,7 +5,7 @@ const ValidParameterNameExpression = /^(\w+):?(\w*)$/;
 export class PgClient {
     constructor(private poolClient: PoolClient) { }
 
-    async queryOne<T>(query: string, params?: Partial<T>): Promise<T | undefined> {
+    async queryOne<T>(query: string, params?: any): Promise<T | undefined> {
         return this.poolClient.query(PgClient.buildQuery(query, params))
             .then(result => {
                 if (result.rowCount > 1) {
@@ -15,12 +15,12 @@ export class PgClient {
             });
     }
 
-    async query<T>(query: string, params: Partial<T>): Promise<T[]> {
+    async query<T>(query: string, params: any): Promise<T[]> {
         const result = await this.poolClient.query(PgClient.buildQuery(query, params));
         return result.rows as T[];
     }
 
-    private static buildQuery<T>(query: string, parameters?: Partial<T>): QueryConfig {
+    private static buildQuery<T>(query: string, parameters?: any): QueryConfig {
         let newQuery = query;
         let parameterArray: any[] = [];
 

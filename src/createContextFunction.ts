@@ -52,7 +52,7 @@ export const createContextFunction = (connection: Connection, pool: Pool) => {
         const client = await pool.connect();
         const pgClient = new PgClient(client);
         const eventRepository = new PostgressEventRepository(pgClient);
-        const eventAttendanceRepository = new PostgressEventAttendanceRepository(connection);
+        const eventAttendanceRepository = new PostgressEventAttendanceRepository(pgClient);
         const userService = new UserService(new PostgressUsersRepository(connection));
         const eventService = new EventService(eventRepository, eventAttendanceRepository);
 

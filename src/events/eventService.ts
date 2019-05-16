@@ -21,8 +21,8 @@ export class EventService {
             const attendance = await this.eventAttendanceRepository.create(userId, eventId, EventAttendanceRole.Guest);
             return attendance;
         } catch (error) {
-            // TODO: find a better approach?
-            if (error instanceof QueryFailedError && error.message.includes("duplicate key")) {
+            // 23505 - constraint violation TODO: map to domain error in repo instead
+            if (error.code == 23505 && error.constraint == 'event_attendances_event_id_user_id_idx') {
                 throw new Error("Already an attendee");
             }
             throw error;
