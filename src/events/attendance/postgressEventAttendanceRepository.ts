@@ -36,7 +36,7 @@ export class PostgressEventAttendanceRepository implements EventAttendanceReposi
 
     async cancel(userId: string, eventId: string): Promise<EventAttendance> {
         return this.client
-            .queryOne<EventAttendanceEntity>(
+            .queryOneOrFail<EventAttendanceEntity>(
                 'UPDATE event_attendances SET canceled_at = NOW() WHERE user_id = :userId AND event_id = :eventId RETURNING *',
                 { userId, eventId }
             )

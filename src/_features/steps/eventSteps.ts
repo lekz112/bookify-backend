@@ -20,21 +20,24 @@ Then('the user should be the owner of the event', function () {
 });
 
 When('the user fetches list of events', async function () {
-    const result = await this.client.query({ query: eventsQuery });
-    this.response = (result.data as any).events;
+    this.response = await this.client.query({ query: eventsQuery });     
 });
 
 Then('the user should see event called {string} in the list', function (name) {
-    expect(this.response[0].name).to.be.equal(name);
+    const event = this.response.data.events.find(e => e.name == name);
+    expect(event).to.exist;    
 });
 
 When('the user cancels the event called {string}', async function(name: string) {    
     const events = await this.client.query({ query: eventsQuery });    
     const id = (events.data as any).events.find((event: Event) => event.name == name).id;    
-    const response = await this.client.mutate({ mutation: CancelEventMutation, variables: { id } });    
-    this.response = (response.data as any).cancelEvent;
+    try {
+        this.response = await this.client.mutate({ mutation: CancelEventMutation, variables: { id } });        
+    } catch (error) {
+        this.error = error;
+    }    
 });
 
 Then('the event should be canceled', function () {
-    expect(this.response.status).to.be.equal(EventStatus.Canceled);
+    expect(this.response.data.cancelEvent.status).to.be.equal(EventStatus.Canceled);
 });

@@ -6,6 +6,15 @@ const ValidParameterNameExpression = /^(\w+):?(\w*)$/;
 export class PgClient implements TransactionScope {    
     constructor(private poolClient: PoolClient) { }
 
+    async queryOneOrFail<T>(query: string, params?: any): Promise<T> {
+        const result = await this.queryOne<T>(query, params);
+        if (result) {
+            return result
+        } else {
+            throw(new Error("No items")); // TODO: code?
+        }
+    }
+
     async queryOne<T>(query: string, params?: any): Promise<T | undefined> {
         return this.poolClient.query(PgClient.buildQuery(query, params))
             .then(result => {

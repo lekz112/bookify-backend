@@ -34,7 +34,7 @@ export class PostgressEventRepository implements EventRepository {
 
     async create(name: string): Promise<Event> {
         return this.client
-            .queryOne<EventEntity>(
+            .queryOneOrFail<EventEntity>(
                 'INSERT INTO events(name, status) VALUES (:name, :status) RETURNING *',
                 { name, status: EventStatus.Scheduled }
             )
@@ -43,18 +43,24 @@ export class PostgressEventRepository implements EventRepository {
 
     async setStatus(id: string, status: EventStatus): Promise<Event> {
         return this.client
-            .queryOne<EventEntity>(
+            .queryOneOrFail<EventEntity>(
                 'UPDATE events SET status = :status WHERE id = :id RETURNING *',
                 { status, id }
             )
             .then(PostgressEventRepository.mapToDomain)
     }
 
-    private static mapToDomain(entity: EventEntity): Event {
-        return {
-            ...entity,
-            status: entity.status as EventStatus,
-            createdAt: entity.created_at
+    private static mapToDomain(entity: undefined): undefined;
+    private static mapToDomain(entity: EventEntity): Event;
+    private static mapToDomain(entity: EventEntity | undefined): Event | undefined {
+        if (entity) {
+            return {
+                ...entity,
+                status: entity.status as EventStatus,
+                createdAt: entity.created_at
+            }
+        } else {
+            return undefined;
         }
     }
 }

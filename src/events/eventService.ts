@@ -1,5 +1,5 @@
 import { TransactionScope } from '../persistance/transactionScope';
-import { EventAttendance, EventAttendanceRole } from "./attendance/eventAttendance";
+import { EventAttendance, EventAttendanceRole, EventAttendanceStatus } from "./attendance/eventAttendance";
 import { EventAttendanceRepository } from "./attendance/eventAttendanceRepository";
 import { Event, EventStatus } from './event';
 import { EventRepository } from "./eventRepository";
@@ -41,12 +41,23 @@ export class EventService {
     }
 
     async cancelEvent(userId: string, id: string): Promise<Event> {
+        // So, I am not sure whether this should be wrapped into transaction
+        // One edge case I see, is that user tries to cancel event while his permissions are changed
+        // Doesn't seem like an issue
         const event = await this.eventRepository.findById(id);
 
         if (event === undefined) {
             throw new Error("Event doesn't exist")
         }
-        // TODO: check owner
+        const attendees = await this.eventAttendanceRepository.findByEventId(event.id);
+        const userAttendance = attendees.find(a => a.userId == userId);
+
+        if (userAttendance === undefined) {
+            throw new Error("Not attending the event");
+        }
+        if (userAttendance.role != EventAttendanceRole.Owner) {
+            throw new Error("Only owners can cancel events");
+        }        
         if (event.status == EventStatus.Canceled) {
             return event
         }
@@ -57,6 +68,14 @@ export class EventService {
 
 
     async cancelEventAttendance(userId: string, eventId: string): Promise<EventAttendance> {
-        return this.eventAttendanceRepository.cancel(userId, eventId);
+        const attendees = await this.eventAttendanceRepository.findByEventId(eventId);
+        const userAttendance = attendees.find(a => a.userId == userId);
+        if (userAttendance === undefined) {
+            throw new Error("Not attending the event");
+        }
+        if (userAttendance.status == EventAttendanceStatus.Canceled) {
+            return userAttendance;
+        }        
+        return await this.eventAttendanceRepository.cancel(userId, eventId);        
     }
 }

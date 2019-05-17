@@ -28,7 +28,7 @@ When('the user cancels attendance to the event {string}', async function (name: 
     }
     catch (error) {
         this.error = error;
-    }
+    }    
 });
 
 Then('the user should receive successfull reservation with status {string} and role {string}', function (status: string, role: string) {
