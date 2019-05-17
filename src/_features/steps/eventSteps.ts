@@ -16,7 +16,7 @@ Then('the event called {string} should be created', function (name) {
 
 Then('the user should be the owner of the event', function () {
     expect(this.response.attendees[0].role).to.be.equal(EventAttendanceRole.Owner);
-    expect(this.response.attendees[0].user.email).to.be.equal(this.signedInUserEmail);
+    expect(this.response.attendees[0].user.id).to.be.equal(this.signedInUserId);
 });
 
 When('the user fetches list of events', async function () {
@@ -35,6 +35,6 @@ When('the user cancels the event called {string}', async function(name: string) 
     this.response = (response.data as any).cancelEvent;
 });
 
-Then('the event should be caneceled', function () {
+Then('the event should be canceled', function () {
     expect(this.response.status).to.be.equal(EventStatus.Canceled);
 });

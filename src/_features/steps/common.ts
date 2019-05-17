@@ -18,8 +18,8 @@ declare module 'cucumber' {
         response: any;
         reservation: EventAttendance;
         error: any;
-        signedInUserEmail: string;
-        userTokens: Map<string, string>;
+        users: Map<string, { id: string, token: string }>;
+        signedInUserId: string,
         events: Map<string, string>;
         pool: Pool
     }
@@ -61,11 +61,14 @@ After(async function () {
 
 Given('the system has the following users:', async function (dataTable: TableDefinition) {
     await Promise.all(dataTable.hashes().map(async row => {
-        const email = row['email'];
-        const password = row['password'];
-        const response = await this.client.mutate({ mutation: signUpMutation, variables: { email, password } });
+        const name = row['name'];
+        const response = await this.client.mutate({
+            mutation: signUpMutation,
+            variables: { email: `${name}@bookify.com`, password: 'password' }
+        });
         const token = response.data.signUp.token;
-        this.userTokens.set(email, token);
+        const id = response.data.signUp.user.id;
+        this.userTokens.set(name, { id, token });
     }));
 });
 
@@ -74,14 +77,15 @@ Given('the system has the following events:', async function (dataTable: TableDe
         const name = row['name'];
         const owner = row['owner'];
 
-        this.client.setAccessToken(this.userTokens.get(owner));
+        this.client.setAccessToken(this.userTokens.get(owner).token);
         const response = await this.client.mutate({ mutation: createEventMutation, variables: { name } });
         const eventId = response.data.createEvent.id;
         this.events.set(name, eventId);
     }));
 });
 
-Given('the user is signed in as {string}', async function (email: string) {    
-    this.signedInUserEmail = email;
-    this.client.setAccessToken(this.userTokens.get(email));
+Given('the user is signed in as {string}', async function (name: string) {
+    const user = this.userTokens.get(name);
+    this.signedInUserId = user.id
+    this.client.setAccessToken(user.token);
 });

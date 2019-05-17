@@ -6,6 +6,7 @@ import { cancelEventAttendanceMutation } from '../queries/cancelMeetupAttendance
 import { eventByIdQuery } from '../queries/eventByIdQuery';
 
 Given('the user is an attendee at the event {string}', async function (name: string) {
+    
     const eventId = this.events.get(name);
     await this.client.mutate({ mutation: applyForEventMutation, variables: { eventId } });
 });
@@ -45,9 +46,9 @@ Then('the user should be an attendee for the event {string}', async function (na
     const eventId = this.events.get(name)
     const response = await this.client.query({ query: eventByIdQuery, variables: { id: eventId } });
     const event = response.data.event as Event;
-
+    
     expect(event.attendees.some(
-        (attendee) => attendee.user.email == this.signedInUserEmail
+        (attendee) => attendee.user.id == this.signedInUserId
     )).to.be.true
 });
 
