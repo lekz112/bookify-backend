@@ -4,6 +4,7 @@ import { signJWT } from './JWT'
 import * as bcrypt from 'bcrypt';
 import config from '../config'
 import { QueryFailedError } from "typeorm";
+import { Email, Name, Password } from "./types";
 
 export class UserService {
     constructor(private userRepository: UsersRepository) { }
@@ -26,14 +27,15 @@ export class UserService {
         return { user, token: signJWT(user.id) };
     }
 
-    async signUp(email: string, password: string): Promise<SignUpPayload> {
-        const hashedPassword = await bcrypt.hash(password, config.bcryptSaltRounts);
+    async signUp(email: Email, name: Name, password: Password): Promise<SignUpPayload> {
+        const hashedPassword = await bcrypt.hash(password.value, config.bcryptSaltRounts);
         try {
-            const user = await this.userRepository.create(email, hashedPassword);
+            const user = await this.userRepository.create(email.value, name.value, hashedPassword);
 
             return { user, token: signJWT(user.id) };
         }
         catch (error) {
+            // TODO: Make idenpotent
             if (error instanceof QueryFailedError && error.message.includes("duplicate key")) {
                 throw new Error("Email is already used");
             }

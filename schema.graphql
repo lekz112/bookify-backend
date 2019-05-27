@@ -40,6 +40,7 @@ type EventAttendance {
 type User {
   id: ID!
   email: String!
+  name: String!
 }
 
 enum EventStatus {
@@ -68,6 +69,7 @@ input CancelEventInput {
 input SignUpInput {
   email: String!
   password: String!
+  name: String!
 }
 
 type SignUpPayload {

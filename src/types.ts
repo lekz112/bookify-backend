@@ -1,4 +1,4 @@
-// Generated in 2019-05-16T16:19:23+02:00
+// Generated in 2019-05-28T01:32:02+02:00
 
 export interface CreateEventInput {
   name: string;
@@ -12,6 +12,8 @@ export interface SignUpInput {
   email: string;
 
   password: string;
+
+  name: string;
 }
 
 export interface SignInInput {
@@ -79,6 +81,8 @@ export interface User {
   id: string;
 
   email: string;
+
+  name: string;
 }
 
 export interface Mutation {
@@ -299,6 +303,8 @@ export namespace UserResolvers {
     id?: IdResolver<string, TypeParent, Context>;
 
     email?: EmailResolver<string, TypeParent, Context>;
+
+    name?: NameResolver<string, TypeParent, Context>;
   }
 
   export type IdResolver<
@@ -307,6 +313,11 @@ export namespace UserResolvers {
     Context = BookifyContext
   > = Resolver<R, Parent, Context>;
   export type EmailResolver<
+    R = string,
+    Parent = User,
+    Context = BookifyContext
+  > = Resolver<R, Parent, Context>;
+  export type NameResolver<
     R = string,
     Parent = User,
     Context = BookifyContext

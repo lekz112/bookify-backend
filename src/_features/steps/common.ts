@@ -64,7 +64,7 @@ Given('the system has the following users:', async function (dataTable: TableDef
         const name = row['name'];
         const response = await this.client.mutate({
             mutation: signUpMutation,
-            variables: { email: `${name}@bookify.com`, password: 'password' }
+            variables: { email: `${name}@bookify.com`, name, password: 'password' }
         });
         const token = response.data.signUp.token;
         const id = response.data.signUp.user.id;

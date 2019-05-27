@@ -1,4 +1,5 @@
 import { QueryResolvers, MutationResolvers, User, SignUpPayload, SignInPayload } from "../types";
+import { Email, Name, Password } from "./types";
 
 interface UserResolvers {
     Query: {
@@ -20,8 +21,9 @@ export const userResolvers: UserResolvers = {
         }
     },
     Mutation: {
-        signUp: (_parent, { input }, { userService }): Promise<SignUpPayload> => {            
-            return userService.signUp(input.email, input.password);
+        signUp: (_parent, { input }, { userService }): Promise<SignUpPayload> => {     
+            const { email, name, password} = input;       
+            return userService.signUp(new Email(email), new Name(name), new Password(password));
         },
 
         signIn: (_parent, { input }, { userService }): Promise<SignInPayload> => {

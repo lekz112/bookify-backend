@@ -24,11 +24,11 @@ export class PostgressUsersRepository implements UsersRepository {
             .getRawOne()
     }
 
-    async create(email: string, password: string): Promise<User> {
+    async create(email: string, name: string, password: string): Promise<User> {
         const result = await this.connection.createQueryBuilder()
             .insert()
             .into(this.tableName)
-            .values({ email, password })
+            .values({ email, name, password })
             .returning('*')
             .execute();
 
