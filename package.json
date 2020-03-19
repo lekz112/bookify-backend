@@ -17,6 +17,8 @@
     "db:rollback": "yarn ts-node ./node_modules/.bin/typeorm migration:revert"
   },
   "devDependencies": {
+    "@stryker-mutator/core": "^2.0.0",
+    "@stryker-mutator/typescript": "^2.0.0",
     "@types/chai": "^4.1.7",
     "@types/cucumber": "^4.0.4",
     "@types/faker": "^4.1.4",
