@@ -2,7 +2,7 @@ data "template_file" "datadog_task_definition" {
   template = "${file("./modules/ec2/datadog_agent_ecs.json")}"
 
   vars {
-    dd_api_key = "cfd873c458552158965b52b3d6f2e598"
+    dd_api_key = "n/a"
   }
 }
 
